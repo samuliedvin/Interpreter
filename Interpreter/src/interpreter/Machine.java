@@ -1,33 +1,40 @@
 package interpreter;
 
 import java.util.*;
-import java.util.function.BiFunction;
+import java.util.function.Consumer;
 
 public class Machine{
 
   Stack<Object> dataStack;
-  Stack<?> returnAddressStack;
+  Stack<Integer> returnAddressStack;
   int instructionPointer;
-  ArrayList<?> code;
+  ArrayList<Object> code;
   
-  Map<String, BiFunction<?, ?, ?>> dispatchMap;
+  Map<String, Consumer<Stack<Object>>> dispatchMap;
 
 // Init machine
   public Machine(String input) {
     this.dataStack = new Stack<Object>();
-    this.dispatchMap = new HashMap<String, BiFunction<?, ?, ?>>();
+    
+    this.dispatchMap = new HashMap<String, Consumer<Stack<Object>>>();
 
     this.code = parse(input);
  
-    BiFunction<Integer, Integer, Integer> plusFunction = Machine::plus;
-    BiFunction<Integer, Integer, Integer> minusFunction = Machine::minus;
-    BiFunction<Integer, Integer, Integer> multiplyFunction = Machine::mul;
-    BiFunction<Integer, Integer, Integer> divideFunction = Machine::div;
-      // Init dispatch map
-    dispatchMap.put("+", plusFunction);
-    dispatchMap.put("-", minusFunction);
-    dispatchMap.put("*", multiplyFunction);
-    dispatchMap.put("/", divideFunction);
+    Consumer<Stack<Object>> plus = new Plus();
+    Consumer<Stack<Object>> minus = new Minus();
+    Consumer<Stack<Object>> mul = new Multiply();
+    Consumer<Stack<Object>> div = new Divide();
+    
+    Consumer<Stack<Object>> print = new PrintStack();
+    
+    // Init dispatch map
+    
+    dispatchMap.put("+", plus);
+    dispatchMap.put("-", minus);
+    dispatchMap.put("*", mul);
+    dispatchMap.put("/", div);
+    dispatchMap.put(".", print);
+
   }
 
 // Let the machine run stack code
@@ -40,19 +47,13 @@ public class Machine{
       this.dispatch(opcode);
       
     }
-    System.out.println(this.dataStack.peek());
   }
 
   public void dispatch(Object op) {
 	  
       if (op instanceof String && dispatchMap.containsKey(op)) {
-        BiFunction function = (BiFunction)this.dispatchMap.get(op);
-        
-        int a1 = (Integer) this.dataStack.pop();
-        int a2 = (Integer) this.dataStack.pop();
-        int result = (Integer) function.apply(a1, a2);
-        this.dataStack.push(result);
-        
+        Consumer<Stack<Object>> function = this.dispatchMap.get(op);
+        function.accept(this.dataStack);
       } else if (op instanceof Integer) {
         this.push(op);
       } else if (op instanceof String) {
@@ -61,14 +62,12 @@ public class Machine{
   }
 
 
-  public ArrayList parse(String input) {
+  public ArrayList<Object> parse(String input) {
 
-    ArrayList result = new ArrayList();
+    ArrayList<Object> result = new ArrayList<Object>();
     String[] splitted = input.split(" ");
 
     int codeLengthPointer = 0;
-
-    
 
     while (codeLengthPointer < splitted.length) {
       try {
@@ -109,6 +108,83 @@ public class Machine{
   public static Integer div (Integer a, Integer b) {
 	  return b / a;
   }
+  
+  public static String print(Stack<Object> a) {
+	  String result = "";
+	  while (!a.isEmpty()) {
+		  result = (String) a.pop();
+	  }
+	  return result;
+  }
+
 
 
 }
+
+
+// Lets gou:
+
+/*
+ * 
+ * Nelilaskin:
+ * 
+ * */
+
+class Plus implements Consumer<Stack<Object>> {
+	@Override
+	public void accept(Stack<Object> st) {
+		int a = (Integer) st.pop();
+		int b = (Integer) st.pop();		
+		int result = a + b;
+		st.push(result);
+	}
+}
+
+class Minus implements Consumer<Stack<Object>> {
+	@Override
+	public void accept(Stack<Object> st) {
+		int a = (Integer) st.pop();
+		int b = (Integer) st.pop();		
+		int result = b - a;
+		st.push(result);
+	}
+}
+
+class Multiply implements Consumer<Stack<Object>> {
+	@Override
+	public void accept(Stack<Object> st) {
+		int a = (Integer) st.pop();
+		int b = (Integer) st.pop();		
+		int result = a * b;
+		st.push(result);
+	}
+}
+
+class Divide implements Consumer<Stack<Object>> {
+	@Override
+	public void accept(Stack<Object> st) {
+		double a = ((Integer) st.pop()).doubleValue();
+		double b = ((Integer) st.pop()).doubleValue();
+		double result = b / a;
+		st.push(result);
+	}
+}
+
+
+/*
+ * 
+ * Tulostus
+ * 
+ */
+
+class PrintStack implements Consumer<Stack<Object>> {
+	
+	@Override
+	public void accept(Stack<Object> st) {
+		while(!st.isEmpty()) {
+			System.out.println(st.pop());
+		}
+		
+	}
+}
+
