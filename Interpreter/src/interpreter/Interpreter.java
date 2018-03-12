@@ -14,13 +14,14 @@ public class Interpreter{
 
       System.out.println("Welcome to Stack lang REPL");
 
+      machine = new Machine();
+      
       while(true) {
         try {
 
           System.out.print("> ");
           code = scanner.nextLine();
-          machine = new Machine(code);
-          machine.run();
+          machine.run(code);
 
         } catch (Exception e) {
           e.printStackTrace();

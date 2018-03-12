@@ -13,12 +13,12 @@ public class Machine{
   Map<String, Consumer<Stack<Object>>> dispatchMap;
 
 // Init machine
-  public Machine(String input) {
+  public Machine() {
     this.dataStack = new Stack<Object>();
     
     this.dispatchMap = new HashMap<String, Consumer<Stack<Object>>>();
 
-    this.code = parse(input);
+    code = new ArrayList<Object>();
  
     Consumer<Stack<Object>> plus = new Plus();
     Consumer<Stack<Object>> minus = new Minus();
@@ -39,7 +39,10 @@ public class Machine{
 
 // Let the machine run stack code
 
-  public void run() {
+  public void run(String input) {
+	  
+	parse(input);
+	  
     while (this.instructionPointer < this.code.size()) {
 
       Object opcode = code.get(instructionPointer);
@@ -53,7 +56,11 @@ public class Machine{
 	  
       if (op instanceof String && dispatchMap.containsKey(op)) {
         Consumer<Stack<Object>> function = this.dispatchMap.get(op);
-        function.accept(this.dataStack);
+        try {
+        		function.accept(this.dataStack);
+        } catch (EmptyStackException e) {
+        		System.out.println("Your stack dont have enough items to do operation \"" + op + "\"");
+        }
       } else if (op instanceof Integer) {
         this.push(op);
       } else if (op instanceof String) {
@@ -62,9 +69,8 @@ public class Machine{
   }
 
 
-  public ArrayList<Object> parse(String input) {
+  public void parse(String input) {
 
-    ArrayList<Object> result = new ArrayList<Object>();
     String[] splitted = input.split(" ");
 
     int codeLengthPointer = 0;
@@ -72,16 +78,13 @@ public class Machine{
     while (codeLengthPointer < splitted.length) {
       try {
         int value = Integer.parseInt(splitted[codeLengthPointer]);
-        result.add(value);
+        this.code.add(value);
       } catch (NumberFormatException e) {
         String value = splitted[codeLengthPointer];
-        result.add(value);
+        this.code.add(value);
       }
       codeLengthPointer++;
     }
-
-    return result;
-
   }
 
   public Object pop() {
@@ -92,30 +95,6 @@ public class Machine{
     this.dataStack.push(a);
   }
 
-
-  public static Integer plus (Integer a, Integer b) {
-	  return a + b;
-  }
-
-  public static Integer minus (Integer a, Integer b) {
-	  return b - a;
-  }
-  
-  public static Integer mul (Integer a, Integer b) {
-	  return a * b;
-  }
-  
-  public static Integer div (Integer a, Integer b) {
-	  return b / a;
-  }
-  
-  public static String print(Stack<Object> a) {
-	  String result = "";
-	  while (!a.isEmpty()) {
-		  result = (String) a.pop();
-	  }
-	  return result;
-  }
 
 
 
