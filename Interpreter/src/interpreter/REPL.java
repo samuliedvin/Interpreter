@@ -2,7 +2,7 @@ package interpreter;
 
 import java.util.*;
 
-public class Interpreter{
+public class REPL{
 
   public static void main(String[] args) {
 

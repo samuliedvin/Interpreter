@@ -8,7 +8,7 @@ public class Machine{
   Stack<Object> dataStack;
   Stack<Integer> returnAddressStack;
   int instructionPointer;
-  ArrayList<Object> code;
+  Stack<Object> code;
   
   Map<String, Consumer<Stack<Object>>> dispatchMap;
 
@@ -18,7 +18,7 @@ public class Machine{
     
     this.dispatchMap = new HashMap<String, Consumer<Stack<Object>>>();
 
-    code = new ArrayList<Object>();
+    code = new Stack<Object>();
  
     Consumer<Stack<Object>> plus = new Plus();
     Consumer<Stack<Object>> minus = new Minus();
@@ -43,10 +43,9 @@ public class Machine{
 	  
 	parse(input);
 	  
-    while (this.instructionPointer < this.code.size()) {
+    while (!code.empty()) {
 
-      Object opcode = code.get(instructionPointer);
-      this.instructionPointer += 1;
+      Object opcode = code.pop();
       this.dispatch(opcode);
       
     }
@@ -73,17 +72,17 @@ public class Machine{
 
     String[] splitted = input.split(" ");
 
-    int codeLengthPointer = 0;
+    int codeLengthPointer = splitted.length -1;
 
-    while (codeLengthPointer < splitted.length) {
+    while (codeLengthPointer >= 0) {
       try {
         int value = Integer.parseInt(splitted[codeLengthPointer]);
-        this.code.add(value);
+        this.code.push(value);
       } catch (NumberFormatException e) {
         String value = splitted[codeLengthPointer];
-        this.code.add(value);
+        this.code.push(value);
       }
-      codeLengthPointer++;
+      codeLengthPointer--;
     }
   }
 
