@@ -2,33 +2,33 @@ import java.util.*;
 
 public class REPL{
 
-  public static void main(String[] args) {
+    public static void main(String[] args) {
 
-      Scanner scanner = new Scanner(System.in);
+        Scanner scanner = new Scanner(System.in);
 
-      String code;
+        String code;
 
-      Machine machine;
+        Machine machine;
 
-      System.out.println("Welcome to Stack lang REPL");
+        System.out.println("Welcome to Stack lang REPL");
 
-      machine = new Machine();
-      
-      while(true) {
-        try {
+        machine = new Machine();
 
-          System.out.print("> ");
-          code = scanner.nextLine();
-          machine.run(code);
+        while(true) {
+            try {
 
-        } catch (Exception e) {
-          e.printStackTrace();
-          break;
+                System.out.print("> ");
+                code = scanner.nextLine();
+                machine.run(code);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                break;
+            }
         }
-      }
-      
-      scanner.close();
 
-  }
+        scanner.close();
+
+    }
 
 }
