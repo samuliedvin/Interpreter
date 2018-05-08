@@ -1,6 +1,6 @@
 import java.util.*;
 
-public class REPL{
+public class REPL {
 
     public static void main(String[] args) {
 
@@ -14,7 +14,7 @@ public class REPL{
 
         machine = new Machine();
 
-        while(true) {
+        while (true) {
             try {
 
                 System.out.print("> ");
