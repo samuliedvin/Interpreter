@@ -1,5 +1,3 @@
-package interpreter;
-
 import java.util.*;
 
 public class REPL{
