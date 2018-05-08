@@ -18,16 +18,24 @@ public class Machine{
 
         code = new Stack<Object>();
 
+        // Basic calculations
         Consumer<Stack<Object>> plus = new Plus();
         Consumer<Stack<Object>> minus = new Minus();
         Consumer<Stack<Object>> mul = new Multiply();
         Consumer<Stack<Object>> div = new Divide();
+        
+        // Comparators
         Consumer<Stack<Object>> gt = new Greater();
         Consumer<Stack<Object>> lt = new Lesser();
         Consumer<Stack<Object>> eq = new Equals();
         Consumer<Stack<Object>> goe = new GreaterOrEqual();
         Consumer<Stack<Object>> loe = new LesserOrEqual();
         Consumer<Stack<Object>> neq = new NotEquals();
+        
+        // Logic operators
+        Consumer<Stack<Object>> and = new And();
+        Consumer<Stack<Object>> or = new Or();
+        Consumer<Stack<Object>> not = new Not();
 
         Consumer<Stack<Object>> print = new PrintStack();
 
@@ -44,6 +52,9 @@ public class Machine{
         dispatchMap.put(">=", goe);
         dispatchMap.put("<=", loe);
         dispatchMap.put("!=", neq);
+        dispatchMap.put("and", and);
+        dispatchMap.put("or", or);
+        dispatchMap.put("not", not);
     }
 
 // Let the machine run stack code
@@ -69,10 +80,8 @@ public class Machine{
             } catch (EmptyStackException e) {
                 System.out.println("Your stack dont have enough items to do operation \"" + op + "\"");
             }
-        } else if (op instanceof Integer) {
-            this.push(op);
-        } else if (op instanceof String) {
-            this.push(op);
+        } else { 
+        		this.push(op);
         }
     }
 
@@ -88,18 +97,19 @@ public class Machine{
                 int value = Integer.parseInt(splitted[codeLengthPointer]);
                 this.code.push(value);
             } catch (NumberFormatException e) {
-                boolean bool;
+                boolean booleanValue;
                 String value = splitted[codeLengthPointer];
+                
                 if (value.equals("true")){
-                     bool = true;
-                     this.code.push(bool);
+                     booleanValue = true;
+                     this.code.push(booleanValue);
                 } else if (value.equals("false")) {
-                    bool = false;
-                    this.code.push(bool);
-                }
-                else {
+                    booleanValue = false;
+                    this.code.push(booleanValue);
+                } else {
                     this.code.push(value);
                 };
+                
             }
             codeLengthPointer--;
         }
@@ -220,6 +230,35 @@ class LesserOrEqual implements Consumer<Stack<Object>> {
         int a = ((Integer) st.pop());
         int b = ((Integer) st.pop());
         boolean result = (a <= b);
+        st.push(result);
+    }
+}
+
+class And implements Consumer<Stack<Object>> {
+	@Override
+    public void accept(Stack<Object> st) {
+        boolean a = ((Boolean) st.pop());
+        boolean b = ((Boolean) st.pop());
+        boolean result = (a && b);
+        st.push(result);
+    }
+}
+
+class Or implements Consumer<Stack<Object>> {
+	@Override
+    public void accept(Stack<Object> st) {
+        boolean a = ((Boolean) st.pop());
+        boolean b = ((Boolean) st.pop());
+        boolean result = (a || b);
+        st.push(result);
+    }
+}
+
+class Not implements Consumer<Stack<Object>> {
+	@Override
+    public void accept(Stack<Object> st) {
+        boolean a = ((Boolean) st.pop());
+        boolean result = (!a);
         st.push(result);
     }
 }
