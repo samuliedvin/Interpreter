@@ -1,99 +1,117 @@
-package interpreter;
-
 import java.util.*;
 import java.util.function.Consumer;
 
 public class Machine{
 
-  Stack<Object> dataStack;
-  Stack<Integer> returnAddressStack;
-  int instructionPointer;
-  ArrayList<Object> code;
-  
-  Map<String, Consumer<Stack<Object>>> dispatchMap;
+    Stack<Object> dataStack;
+    Stack<Integer> returnAddressStack;
+    int instructionPointer;
+    Stack<Object> code;
 
-// Init machine
-  public Machine() {
-    this.dataStack = new Stack<Object>();
-    
-    this.dispatchMap = new HashMap<String, Consumer<Stack<Object>>>();
+    Map<String, Consumer<Stack<Object>>> dispatchMap;
 
-    code = new ArrayList<Object>();
- 
-    Consumer<Stack<Object>> plus = new Plus();
-    Consumer<Stack<Object>> minus = new Minus();
-    Consumer<Stack<Object>> mul = new Multiply();
-    Consumer<Stack<Object>> div = new Divide();
-    
-    Consumer<Stack<Object>> print = new PrintStack();
-    
-    // Init dispatch map
-    
-    dispatchMap.put("+", plus);
-    dispatchMap.put("-", minus);
-    dispatchMap.put("*", mul);
-    dispatchMap.put("/", div);
-    dispatchMap.put(".", print);
+    // Init machine
+    public Machine() {
+        this.dataStack = new Stack<Object>();
 
-  }
+        this.dispatchMap = new HashMap<String, Consumer<Stack<Object>>>();
+
+        code = new Stack<Object>();
+
+        Consumer<Stack<Object>> plus = new Plus();
+        Consumer<Stack<Object>> minus = new Minus();
+        Consumer<Stack<Object>> mul = new Multiply();
+        Consumer<Stack<Object>> div = new Divide();
+        Consumer<Stack<Object>> gt = new Greater();
+        Consumer<Stack<Object>> lt = new Lesser();
+        Consumer<Stack<Object>> eq = new Equals();
+        Consumer<Stack<Object>> goe = new GreaterOrEqual();
+        Consumer<Stack<Object>> loe = new LesserOrEqual();
+        Consumer<Stack<Object>> neq = new NotEquals();
+
+        Consumer<Stack<Object>> print = new PrintStack();
+
+        // Init dispatch map
+
+        dispatchMap.put("+", plus);
+        dispatchMap.put("-", minus);
+        dispatchMap.put("*", mul);
+        dispatchMap.put("/", div);
+        dispatchMap.put(".", print);
+        dispatchMap.put(">", gt);
+        dispatchMap.put("<", lt);
+        dispatchMap.put("==", eq);
+        dispatchMap.put(">=", goe);
+        dispatchMap.put("<=", loe);
+        dispatchMap.put("!=", neq);
+    }
 
 // Let the machine run stack code
 
-  public void run(String input) {
-	  
-	parse(input);
-	  
-    while (this.instructionPointer < this.code.size()) {
+    public void run(String input) {
 
-      Object opcode = code.get(instructionPointer);
-      this.instructionPointer += 1;
-      this.dispatch(opcode);
-      
-    }
-  }
+        parse(input);
 
-  public void dispatch(Object op) {
-	  
-      if (op instanceof String && dispatchMap.containsKey(op)) {
-        Consumer<Stack<Object>> function = this.dispatchMap.get(op);
-        try {
-        		function.accept(this.dataStack);
-        } catch (EmptyStackException e) {
-        		System.out.println("Your stack dont have enough items to do operation \"" + op + "\"");
+        while (!code.empty()) {
+
+            Object opcode = code.pop();
+            this.dispatch(opcode);
+
         }
-      } else if (op instanceof Integer) {
-        this.push(op);
-      } else if (op instanceof String) {
-        this.push(op);
-      }
-  }
-
-
-  public void parse(String input) {
-
-    String[] splitted = input.split(" ");
-
-    int codeLengthPointer = 0;
-
-    while (codeLengthPointer < splitted.length) {
-      try {
-        int value = Integer.parseInt(splitted[codeLengthPointer]);
-        this.code.add(value);
-      } catch (NumberFormatException e) {
-        String value = splitted[codeLengthPointer];
-        this.code.add(value);
-      }
-      codeLengthPointer++;
     }
-  }
 
-  public Object pop() {
-    return this.dataStack.pop();
-  }
+    public void dispatch(Object op) {
 
-  public void push(Object a) {
-    this.dataStack.push(a);
-  }
+        if (op instanceof String && dispatchMap.containsKey(op)) {
+            Consumer<Stack<Object>> function = this.dispatchMap.get(op);
+            try {
+                function.accept(this.dataStack);
+            } catch (EmptyStackException e) {
+                System.out.println("Your stack dont have enough items to do operation \"" + op + "\"");
+            }
+        } else if (op instanceof Integer) {
+            this.push(op);
+        } else if (op instanceof String) {
+            this.push(op);
+        }
+    }
+
+
+    public void parse(String input) {
+
+        String[] splitted = input.split(" ");
+
+        int codeLengthPointer = splitted.length -1;
+
+        while (codeLengthPointer >= 0) {
+            try {
+                int value = Integer.parseInt(splitted[codeLengthPointer]);
+                this.code.push(value);
+            } catch (NumberFormatException e) {
+                boolean bool;
+                String value = splitted[codeLengthPointer];
+                if (value.equals("true")){
+                     bool = true;
+                     this.code.push(bool);
+                } else if (value.equals("false")) {
+                    bool = false;
+                    this.code.push(bool);
+                }
+                else {
+                    this.code.push(value);
+                };
+            }
+            codeLengthPointer--;
+        }
+    }
+
+    public Object pop() {
+        return this.dataStack.pop();
+    }
+
+    public void push(Object a) {
+        this.dataStack.push(a);
+    }
 
 
 
@@ -104,66 +122,124 @@ public class Machine{
 // Lets gou:
 
 /*
- * 
+ *
  * Nelilaskin:
- * 
+ *
  * */
 
 class Plus implements Consumer<Stack<Object>> {
-	@Override
-	public void accept(Stack<Object> st) {
-		int a = (Integer) st.pop();
-		int b = (Integer) st.pop();		
-		int result = a + b;
-		st.push(result);
-	}
+    @Override
+    public void accept(Stack<Object> st) {
+        int a = (Integer) st.pop();
+        int b = (Integer) st.pop();
+        int result = a + b;
+        st.push(result);
+    }
 }
 
 class Minus implements Consumer<Stack<Object>> {
-	@Override
-	public void accept(Stack<Object> st) {
-		int a = (Integer) st.pop();
-		int b = (Integer) st.pop();		
-		int result = b - a;
-		st.push(result);
-	}
+    @Override
+    public void accept(Stack<Object> st) {
+        int a = (Integer) st.pop();
+        int b = (Integer) st.pop();
+        int result = b - a;
+        st.push(result);
+    }
 }
 
 class Multiply implements Consumer<Stack<Object>> {
-	@Override
-	public void accept(Stack<Object> st) {
-		int a = (Integer) st.pop();
-		int b = (Integer) st.pop();		
-		int result = a * b;
-		st.push(result);
-	}
+    @Override
+    public void accept(Stack<Object> st) {
+        int a = (Integer) st.pop();
+        int b = (Integer) st.pop();
+        int result = a * b;
+        st.push(result);
+    }
 }
 
 class Divide implements Consumer<Stack<Object>> {
-	@Override
-	public void accept(Stack<Object> st) {
-		double a = ((Integer) st.pop()).doubleValue();
-		double b = ((Integer) st.pop()).doubleValue();
-		double result = b / a;
-		st.push(result);
-	}
+    @Override
+    public void accept(Stack<Object> st) {
+        double a = ((Integer) st.pop()).doubleValue();
+        double b = ((Integer) st.pop()).doubleValue();
+        double result = b / a;
+        st.push(result);
+    }
+}
+
+class Equals implements Consumer<Stack<Object>> {
+    @Override
+    public void accept(Stack<Object> st) {
+        int a = ((Integer) st.pop());
+        int b = ((Integer) st.pop());
+        boolean result = (a == b);
+        st.push(result);
+    }
+}
+
+class Greater implements Consumer<Stack<Object>> {
+    @Override
+    public void accept(Stack<Object> st) {
+        int a = ((Integer) st.pop());
+        int b = ((Integer) st.pop());
+        boolean result = (a > b);
+        st.push(result);
+    }
+}
+class Lesser implements Consumer<Stack<Object>> {
+    @Override
+    public void accept(Stack<Object> st) {
+        int a = ((Integer) st.pop());
+        int b = ((Integer) st.pop());
+        boolean result = (a < b);
+        st.push(result);
+    }
+}
+class NotEquals implements Consumer<Stack<Object>> {
+    @Override
+    public void accept(Stack<Object> st) {
+        int a = ((Integer) st.pop());
+        int b = ((Integer) st.pop());
+        boolean result = (a != b);
+        st.push(result);
+    }
+}
+
+class GreaterOrEqual implements Consumer<Stack<Object>> {
+    @Override
+    public void accept(Stack<Object> st) {
+        int a = ((Integer) st.pop());
+        int b = ((Integer) st.pop());
+        boolean result = (a >= b);
+        st.push(result);
+    }
+}
+class LesserOrEqual implements Consumer<Stack<Object>> {
+    @Override
+    public void accept(Stack<Object> st) {
+        int a = ((Integer) st.pop());
+        int b = ((Integer) st.pop());
+        boolean result = (a <= b);
+        st.push(result);
+    }
 }
 
 
+
 /*
- * 
+ *
  * Tulostus
- * 
+ *
  */
 
 class PrintStack implements Consumer<Stack<Object>> {
-	
-	@Override
-	public void accept(Stack<Object> st) {
-		while(!st.isEmpty()) {
-			System.out.println(st.pop());
-		}
-		
-	}
+
+    @Override
+    public void accept(Stack<Object> st) {
+        while(!st.isEmpty()) {
+            System.out.println(st.pop());
+        }
+
+    }
 }
 
