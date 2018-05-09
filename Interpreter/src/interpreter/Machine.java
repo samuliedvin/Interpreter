@@ -36,6 +36,16 @@ public class Machine{
         Consumer<Stack<Object>> and = new And();
         Consumer<Stack<Object>> or = new Or();
         Consumer<Stack<Object>> not = new Not();
+        
+        // ”dup”, ”rot”, ”swap”, ”drop”, ”over”, ”nip”, ”tuck” 
+        Consumer<Stack<Object>> dup = new Duplicate();
+        Consumer<Stack<Object>> rot = new Rotate();
+        Consumer<Stack<Object>> swap = new Swap();
+        Consumer<Stack<Object>> drop = new Drop();
+        Consumer<Stack<Object>> over = new Over();
+        Consumer<Stack<Object>> nip = new Nip();
+        Consumer<Stack<Object>> tuck = new Tuck();
+
 
         Consumer<Stack<Object>> print = new PrintStack();
 
@@ -55,6 +65,13 @@ public class Machine{
         dispatchMap.put("and", and);
         dispatchMap.put("or", or);
         dispatchMap.put("not", not);
+        dispatchMap.put("dup", dup);
+        dispatchMap.put("rot", rot);
+        dispatchMap.put("swap", swap);
+        dispatchMap.put("drop", drop);
+        dispatchMap.put("over", over);
+        dispatchMap.put("nip", nip);
+        dispatchMap.put("tuck", tuck);
     }
 
 // Let the machine run stack code
@@ -263,6 +280,83 @@ class Not implements Consumer<Stack<Object>> {
     }
 }
 
+// ”dup”, ”rot”, ”swap”, ”drop”, ”over”, ”nip”, ”tuck” 
+
+class Duplicate implements Consumer<Stack<Object>> {
+	@Override
+    public void accept(Stack<Object> st) {
+		
+		// Duplicate the top element on stack
+        Object a = st.pop();
+        st.push(a);
+        st.push(a);
+    }
+}
+
+class Rotate implements Consumer<Stack<Object>> {
+	@Override
+    public void accept(Stack<Object> st) {
+		
+		// Rotate top three elements on stack (a b c -> b c a)
+        Object a = st.pop();
+        Object b = st.pop();
+        Object c = st.pop();
+        
+        st.push(b); // So lets push them on correct order
+        st.push(c);
+        st.push(a);
+    }
+}
+
+class Drop implements Consumer<Stack<Object>> {
+	@Override
+    public void accept(Stack<Object> st) {
+		Object a = st.pop();
+        a = null;
+    }
+}
+
+class Swap implements Consumer<Stack<Object>> {
+	@Override
+    public void accept(Stack<Object> st) {
+        Object a = st.pop();
+        Object b = st.pop();
+        st.push(a);
+        st.push(b);
+    }
+} 
+
+class Over implements Consumer<Stack<Object>> {
+	@Override
+    public void accept(Stack<Object> st) {
+        Object a = st.pop();
+        Object b = st.pop();
+        st.push(b);
+        st.push(a);
+        st.push(b);
+    }
+} 
+
+class Nip implements Consumer<Stack<Object>> {
+	@Override
+    public void accept(Stack<Object> st) {
+        Object a = st.pop();
+        Object b = st.pop();
+        st.push(a);
+        b = null;
+    }
+} 
+
+class Tuck implements Consumer<Stack<Object>> {
+	@Override
+    public void accept(Stack<Object> st) {
+        Object a = st.pop();
+        Object b = st.pop();
+        st.push(a);
+        st.push(b);
+        st.push(a);
+    }
+} 
 
 
 /*
