@@ -3,51 +3,49 @@ import java.util.function.Consumer;
 
 public class Machine{
 
-    Stack<Object> dataStack;
-    Stack<Integer> returnAddressStack;
-    int instructionPointer;
-    Stack<Object> code;
+    private Stack<Object> dataStack;
+    private Stack<Integer> returnAddressStack;
+    private Stack<Object> codeStack;
 
-    Map<String, Consumer<Stack<Object>>> dispatchMap;
+    Map<String, Consumer<Machine>> dispatchMap;
 
     // Init machine
     public Machine() {
-        this.dataStack = new Stack<Object>();
-
-        this.dispatchMap = new HashMap<String, Consumer<Stack<Object>>>();
-
-        code = new Stack<Object>();
+    	
+        dataStack = new Stack<Object>();
+		dispatchMap = new HashMap<String, Consumer<Machine>>();
+        codeStack = new Stack<Object>();
 
         // Basic calculations
-        Consumer<Stack<Object>> plus = new Plus();
-        Consumer<Stack<Object>> minus = new Minus();
-        Consumer<Stack<Object>> mul = new Multiply();
-        Consumer<Stack<Object>> div = new Divide();
+        Consumer<Machine> plus = new Plus();
+        Consumer<Machine> minus = new Minus();
+        Consumer<Machine> mul = new Multiply();
+        Consumer<Machine> div = new Divide();
         
         // Comparators
-        Consumer<Stack<Object>> gt = new Greater();
-        Consumer<Stack<Object>> lt = new Lesser();
-        Consumer<Stack<Object>> eq = new Equals();
-        Consumer<Stack<Object>> goe = new GreaterOrEqual();
-        Consumer<Stack<Object>> loe = new LesserOrEqual();
-        Consumer<Stack<Object>> neq = new NotEquals();
+        Consumer<Machine> gt = new Greater();
+        Consumer<Machine> lt = new Lesser();
+        Consumer<Machine> eq = new Equals();
+        Consumer<Machine> goe = new GreaterOrEqual();
+        Consumer<Machine> loe = new LesserOrEqual();
+        Consumer<Machine> neq = new NotEquals();
         
         // Logic operators
-        Consumer<Stack<Object>> and = new And();
-        Consumer<Stack<Object>> or = new Or();
-        Consumer<Stack<Object>> not = new Not();
+        Consumer<Machine> and = new And();
+        Consumer<Machine> or = new Or();
+        Consumer<Machine> not = new Not();
         
         // ”dup”, ”rot”, ”swap”, ”drop”, ”over”, ”nip”, ”tuck” 
-        Consumer<Stack<Object>> dup = new Duplicate();
-        Consumer<Stack<Object>> rot = new Rotate();
-        Consumer<Stack<Object>> swap = new Swap();
-        Consumer<Stack<Object>> drop = new Drop();
-        Consumer<Stack<Object>> over = new Over();
-        Consumer<Stack<Object>> nip = new Nip();
-        Consumer<Stack<Object>> tuck = new Tuck();
+        Consumer<Machine> dup = new Duplicate();
+        Consumer<Machine> rot = new Rotate();
+        Consumer<Machine> swap = new Swap();
+        Consumer<Machine> drop = new Drop();
+        Consumer<Machine> over = new Over();
+        Consumer<Machine> nip = new Nip();
+        Consumer<Machine> tuck = new Tuck();
 
 
-        Consumer<Stack<Object>> print = new PrintStack();
+        Consumer<Machine> print = new PrintStack();
 
         // Init dispatch map
 
@@ -80,9 +78,9 @@ public class Machine{
 
         parse(input);
 
-        while (!code.empty()) {
+        while (!codeStack.empty()) {
 
-            Object opcode = code.pop();
+            Object opcode = codeStack.pop();
             this.dispatch(opcode);
 
         }
@@ -91,14 +89,14 @@ public class Machine{
     public void dispatch(Object op) {
 
         if (op instanceof String && dispatchMap.containsKey(op)) {
-            Consumer<Stack<Object>> function = this.dispatchMap.get(op);
+            Consumer<Machine> function = this.dispatchMap.get(op);
             try {
-                function.accept(this.dataStack);
+                function.accept(this);
             } catch (EmptyStackException e) {
                 System.out.println("Your stack dont have enough items to do operation \"" + op + "\"");
             }
         } else { 
-        		this.push(op);
+        		this.dataStack.push(op);
         }
     }
 
@@ -112,19 +110,19 @@ public class Machine{
         while (codeLengthPointer >= 0) {
             try {
                 int value = Integer.parseInt(splitted[codeLengthPointer]);
-                this.code.push(value);
+                this.codeStack.push(value);
             } catch (NumberFormatException e) {
                 boolean booleanValue;
                 String value = splitted[codeLengthPointer];
                 
                 if (value.equals("true")){
                      booleanValue = true;
-                     this.code.push(booleanValue);
+                     this.codeStack.push(booleanValue);
                 } else if (value.equals("false")) {
                     booleanValue = false;
-                    this.code.push(booleanValue);
+                    this.codeStack.push(booleanValue);
                 } else {
-                    this.code.push(value);
+                    this.codeStack.push(value);
                 };
                 
             }
@@ -140,9 +138,22 @@ public class Machine{
         this.dataStack.push(a);
     }
 
-
-
-
+    
+    	public Stack<Object> getCodeStack() {
+    		return codeStack;
+    	}
+    	
+    	public void setCodeStack(Stack<Object> newCodeStack) {
+    		this.codeStack = newCodeStack;
+    	}
+    	
+    	public Stack<Object> getDataStack() {
+    		return dataStack;
+    	}
+    	
+    	public void setDataStack(Stack<Object> newDataStack) {
+    		this.dataStack = newDataStack;
+    	}
 }
 
 
@@ -154,210 +165,280 @@ public class Machine{
  *
  * */
 
-class Plus implements Consumer<Stack<Object>> {
+class Plus implements Consumer<Machine> {
     @Override
-    public void accept(Stack<Object> st) {
+    public void accept(Machine m) {
+    		Stack<Object> st = m.getDataStack();
         int a = (Integer) st.pop();
         int b = (Integer) st.pop();
         int result = a + b;
         st.push(result);
+        m.setDataStack(st);
     }
 }
 
-class Minus implements Consumer<Stack<Object>> {
+class Minus implements Consumer<Machine> {
     @Override
-    public void accept(Stack<Object> st) {
+    public void accept(Machine m) {
+    		Stack<Object> st = m.getDataStack();
         int a = (Integer) st.pop();
         int b = (Integer) st.pop();
         int result = b - a;
         st.push(result);
+        m.setDataStack(st);
     }
 }
 
-class Multiply implements Consumer<Stack<Object>> {
+class Multiply implements Consumer<Machine> {
     @Override
-    public void accept(Stack<Object> st) {
+    public void accept(Machine m) {
+    		Stack<Object> st = m.getDataStack();
         int a = (Integer) st.pop();
         int b = (Integer) st.pop();
         int result = a * b;
         st.push(result);
+        m.setDataStack(st);
     }
 }
 
-class Divide implements Consumer<Stack<Object>> {
+class Divide implements Consumer<Machine> {
     @Override
-    public void accept(Stack<Object> st) {
+    public void accept(Machine m) {
+    		Stack<Object> st = m.getDataStack();
         double a = ((Integer) st.pop()).doubleValue();
         double b = ((Integer) st.pop()).doubleValue();
         double result = b / a;
         st.push(result);
+        m.setDataStack(st);
     }
 }
 
-class Equals implements Consumer<Stack<Object>> {
+class Equals implements Consumer<Machine> {
     @Override
-    public void accept(Stack<Object> st) {
+    public void accept(Machine m) {
+    		Stack<Object> st = m.getDataStack();
         int a = ((Integer) st.pop());
         int b = ((Integer) st.pop());
         boolean result = (a == b);
         st.push(result);
+        m.setDataStack(st);
     }
 }
 
-class Greater implements Consumer<Stack<Object>> {
+class Greater implements Consumer<Machine> {
     @Override
-    public void accept(Stack<Object> st) {
+    public void accept(Machine m) {
+    		Stack<Object> st = m.getDataStack();
         int a = ((Integer) st.pop());
         int b = ((Integer) st.pop());
         boolean result = (a > b);
         st.push(result);
+        m.setDataStack(st);
     }
 }
-class Lesser implements Consumer<Stack<Object>> {
+class Lesser implements Consumer<Machine> {
     @Override
-    public void accept(Stack<Object> st) {
+    public void accept(Machine m) {
+    		Stack<Object> st = m.getDataStack();
         int a = ((Integer) st.pop());
         int b = ((Integer) st.pop());
         boolean result = (a < b);
         st.push(result);
+        m.setDataStack(st);
     }
 }
-class NotEquals implements Consumer<Stack<Object>> {
+class NotEquals implements Consumer<Machine> {
     @Override
-    public void accept(Stack<Object> st) {
+    public void accept(Machine m) {
+    		Stack<Object> st = m.getDataStack();
         int a = ((Integer) st.pop());
         int b = ((Integer) st.pop());
         boolean result = (a != b);
         st.push(result);
+        m.setDataStack(st);
     }
 }
 
-class GreaterOrEqual implements Consumer<Stack<Object>> {
+class GreaterOrEqual implements Consumer<Machine> {
     @Override
-    public void accept(Stack<Object> st) {
+    public void accept(Machine m) {
+    		Stack<Object> st = m.getDataStack();
         int a = ((Integer) st.pop());
         int b = ((Integer) st.pop());
         boolean result = (a >= b);
         st.push(result);
+        m.setDataStack(st);
     }
 }
-class LesserOrEqual implements Consumer<Stack<Object>> {
+class LesserOrEqual implements Consumer<Machine> {
     @Override
-    public void accept(Stack<Object> st) {
+    public void accept(Machine m) {
+    		Stack<Object> st = m.getDataStack();
         int a = ((Integer) st.pop());
         int b = ((Integer) st.pop());
         boolean result = (a <= b);
         st.push(result);
+        m.setDataStack(st);
     }
 }
 
-class And implements Consumer<Stack<Object>> {
-	@Override
-    public void accept(Stack<Object> st) {
+class And implements Consumer<Machine> {
+    @Override
+    public void accept(Machine m) {
+    		Stack<Object> st = m.getDataStack();
         boolean a = ((Boolean) st.pop());
         boolean b = ((Boolean) st.pop());
         boolean result = (a && b);
         st.push(result);
+        m.setDataStack(st);
     }
 }
 
-class Or implements Consumer<Stack<Object>> {
-	@Override
-    public void accept(Stack<Object> st) {
+class Or implements Consumer<Machine> {
+    @Override
+    public void accept(Machine m) {
+    		Stack<Object> st = m.getDataStack();
         boolean a = ((Boolean) st.pop());
         boolean b = ((Boolean) st.pop());
         boolean result = (a || b);
         st.push(result);
+        m.setDataStack(st);
     }
 }
 
-class Not implements Consumer<Stack<Object>> {
-	@Override
-    public void accept(Stack<Object> st) {
+class Not implements Consumer<Machine> {
+    @Override
+    public void accept(Machine m) {
+    		Stack<Object> st = m.getDataStack();
         boolean a = ((Boolean) st.pop());
         boolean result = (!a);
         st.push(result);
+        m.setDataStack(st);
     }
 }
 
 // ”dup”, ”rot”, ”swap”, ”drop”, ”over”, ”nip”, ”tuck” 
 
-class Duplicate implements Consumer<Stack<Object>> {
-	@Override
-    public void accept(Stack<Object> st) {
+class Duplicate implements Consumer<Machine> {
+    @Override
+    public void accept(Machine m) {
+    		Stack<Object> st = m.getDataStack();
 		
 		// Duplicate the top element on stack
         Object a = st.pop();
         st.push(a);
         st.push(a);
+        m.setDataStack(st);
     }
 }
 
-class Rotate implements Consumer<Stack<Object>> {
-	@Override
-    public void accept(Stack<Object> st) {
+class Rotate implements Consumer<Machine> {
+    @Override
+    public void accept(Machine m) {
+    		Stack<Object> st = m.getDataStack();
 		
 		// Rotate top three elements on stack (a b c -> b c a)
         Object a = st.pop();
         Object b = st.pop();
         Object c = st.pop();
         
-        st.push(b); // So lets push them on correct order
+        st.push(a); // So lets push them on correct order
         st.push(c);
-        st.push(a);
+        st.push(b);
+        m.setDataStack(st);
+
     }
 }
 
-class Drop implements Consumer<Stack<Object>> {
-	@Override
-    public void accept(Stack<Object> st) {
+class Drop implements Consumer<Machine> {
+    @Override
+    public void accept(Machine m) {
+    		Stack<Object> st = m.getDataStack();
 		Object a = st.pop();
         a = null;
+        m.setDataStack(st);
+
     }
 }
 
-class Swap implements Consumer<Stack<Object>> {
-	@Override
-    public void accept(Stack<Object> st) {
+class Swap implements Consumer<Machine> {
+    @Override
+    public void accept(Machine m) {
+    		Stack<Object> st = m.getDataStack();
         Object a = st.pop();
         Object b = st.pop();
         st.push(a);
         st.push(b);
+        m.setDataStack(st);
+
     }
 } 
 
-class Over implements Consumer<Stack<Object>> {
-	@Override
-    public void accept(Stack<Object> st) {
+class Over implements Consumer<Machine> {
+    @Override
+    public void accept(Machine m) {
+    		Stack<Object> st = m.getDataStack();
         Object a = st.pop();
         Object b = st.pop();
         st.push(b);
         st.push(a);
         st.push(b);
+        m.setDataStack(st);
+
     }
 } 
 
-class Nip implements Consumer<Stack<Object>> {
-	@Override
-    public void accept(Stack<Object> st) {
+class Nip implements Consumer<Machine> {
+    @Override
+    public void accept(Machine m) {
+    		Stack<Object> st = m.getDataStack();
         Object a = st.pop();
         Object b = st.pop();
         st.push(a);
         b = null;
+        m.setDataStack(st);
+
     }
 } 
 
-class Tuck implements Consumer<Stack<Object>> {
-	@Override
-    public void accept(Stack<Object> st) {
+class Tuck implements Consumer<Machine> {
+    @Override
+    public void accept(Machine m) {
+    		Stack<Object> st = m.getDataStack();
         Object a = st.pop();
         Object b = st.pop();
         st.push(a);
         st.push(b);
         st.push(a);
+        m.setDataStack(st);
+
     }
 } 
 
+
+/*
+ * 
+ * IF-THEN -hommeli
+ * 
+ */
+
+class IfThen implements Consumer<Machine> {
+    @Override
+    public void accept(Machine m) {
+    		Stack<Object> dataStack = m.getDataStack();
+		Stack<Object> codeStack = m.getCodeStack();
+		
+		boolean statement = (Boolean) dataStack.pop();
+		
+		if(statement) {
+			
+		} else {
+			
+		} 
+		m.setDataStack(dataStack);
+		m.setCodeStack(codeStack);
+	}
+}
 
 /*
  *
@@ -365,14 +446,15 @@ class Tuck implements Consumer<Stack<Object>> {
  *
  */
 
-class PrintStack implements Consumer<Stack<Object>> {
-
+class PrintStack implements Consumer<Machine> {
     @Override
-    public void accept(Stack<Object> st) {
+    public void accept(Machine m) {
+    		Stack<Object> st = m.getDataStack();
         while(!st.isEmpty()) {
             System.out.println(st.pop());
         }
-
+        m.setDataStack(st);
     }
+    
 }
 
