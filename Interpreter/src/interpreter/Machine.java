@@ -43,7 +43,10 @@ public class Machine{
         Consumer<Machine> over = new Over();
         Consumer<Machine> nip = new Nip();
         Consumer<Machine> tuck = new Tuck();
+        
+        // IF-THEN-ELSE & DO LOOP
 
+        Consumer<Machine> ifthen = new IfThen();
 
         Consumer<Machine> print = new PrintStack();
 
@@ -70,6 +73,7 @@ public class Machine{
         dispatchMap.put("over", over);
         dispatchMap.put("nip", nip);
         dispatchMap.put("tuck", tuck);
+        dispatchMap.put("if", ifthen);
     }
 
 // Let the machine run stack code
@@ -431,12 +435,20 @@ class IfThen implements Consumer<Machine> {
 		boolean statement = (Boolean) dataStack.pop();
 		
 		if(statement) {
+			Object popped = codeStack.pop();
+			while(!popped.equals("else") || !popped.equals("then")) {
+				m.dispatch(popped);
+				popped = dataStack.pop();
+			}
 			
 		} else {
+			Object popped = codeStack.pop();
+			while(!popped.equals("else") || !popped.equals("then")) {
+				popped = dataStack.pop();
+			}
 			
 		} 
 		m.setDataStack(dataStack);
-		m.setCodeStack(codeStack);
 	}
 }
 
