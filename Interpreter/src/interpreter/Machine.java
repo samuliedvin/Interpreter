@@ -438,12 +438,9 @@ class IfThen implements Consumer<Machine> {
     public void accept(Machine m) {
         Stack<Object> dataStack = m.getDataStack();
         Stack<Object> codeStack = m.getCodeStack();
-        System.out.println("Data :" + dataStack.toString() + "\n");
-        System.out.println("Code :" + codeStack.toString() + "\n");
         int stackSize = codeStack.size();
         int elseIndex = codeStack.indexOf("else");
         int thenIndex = codeStack.indexOf("then");
-        System.out.println("debug - elseIndex : " + elseIndex + "\ndebug - thenIndex : " + thenIndex);
         boolean condition = (Boolean) dataStack.pop();
 
 
@@ -467,7 +464,6 @@ class IfThen implements Consumer<Machine> {
                 for (int i = 0; i <= deleteTowardsIndex - startDeletingFromIndex; i++) {
                     //remove all items from codeStack within ELSE
                     codeStack.remove(startDeletingFromIndex);
-                    System.out.println("Remove op :" + codeStack.toString() + "\n");
                 }
             } else {codeStack.remove("then");}
 
@@ -490,7 +486,6 @@ class IfThen implements Consumer<Machine> {
                 // remove elements from code stack that are ignored
                 for (int i = 0; i < stackSize - startDeletingFromIndex; i++) {
                     codeStack.remove(startDeletingFromIndex);
-                    System.out.println("Remove op :" + codeStack.toString() + "\n");
                 }
                 codeStack.remove("then");
             }
