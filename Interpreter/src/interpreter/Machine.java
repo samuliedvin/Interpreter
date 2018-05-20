@@ -442,29 +442,15 @@ class IfThen implements Consumer<Machine> {
         System.out.println("Data :" + dataStack.toString() + "\n");
         System.out.println("Code :" + codeStack.toString() + "\n");
         int stackSize = codeStack.size();
+        int elseIndex = codeStack.indexOf("else");
+        int thenIndex = codeStack.indexOf("then");
+        System.out.println("debug - elseIndex : " + elseIndex + "\ndebug - thenIndex :" + thenIndex);
         boolean condition = (Boolean) dataStack.pop();
 
-        if (condition) {
-            Object popped = codeStack.pop();
-            for (int i = 0; i < stackSize; i++) {
-                System.out.println("debug :" + popped);
-                m.dispatch(popped);
-                popped = codeStack.pop();
-            }
-
-            /*while (!popped.equals("else") || !popped.equals("then") || codeStack.empty() ) {
-                System.out.println(popped);
-                m.dispatch(popped);
-                popped = dataStack.pop();
-            }*/
-
-        } else {
-            Object popped = codeStack.pop();
-            while (!popped.equals("else") || !popped.equals("then")) {
-                popped = dataStack.pop();
-            }
-
+        if (!condition){
+            int statementEndIndex = codeStack.indexOf("else");
         }
+
         m.setCodeStack(codeStack);
         m.setDataStack(dataStack);
     }
