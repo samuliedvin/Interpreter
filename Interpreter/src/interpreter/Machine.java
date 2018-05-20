@@ -444,11 +444,27 @@ class IfThen implements Consumer<Machine> {
         int stackSize = codeStack.size();
         int elseIndex = codeStack.indexOf("else");
         int thenIndex = codeStack.indexOf("then");
-        System.out.println("debug - elseIndex : " + elseIndex + "\ndebug - thenIndex :" + thenIndex);
+        System.out.println("debug - elseIndex : " + elseIndex + "\ndebug - thenIndex : " + thenIndex);
         boolean condition = (Boolean) dataStack.pop();
 
-        if (!condition){
-            int statementEndIndex = codeStack.indexOf("else");
+        //condition was TRUE and an ELSE command exists
+        if (condition && elseIndex != -1){
+            for (int i = 0; i <= elseIndex-thenIndex; i++) {
+                //remove all items from codeStack within ELSE
+                codeStack.remove(thenIndex);
+                System.out.println("Remove op :" + codeStack.toString() + "\n");
+            }
+
+        }
+
+        //condition was FALSE and an ELSE command exists
+        if (!condition && elseIndex != -1 ){
+            for (int i = 0; i < stackSize-elseIndex; i++) {
+                //remove all items from codeStack within IF TRUE
+                codeStack.remove(elseIndex);
+                System.out.println("Remove op :" + codeStack.toString() + "\n");
+            }
+            codeStack.remove("then");
         }
 
         m.setCodeStack(codeStack);
