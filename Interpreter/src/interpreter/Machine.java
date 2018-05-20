@@ -81,9 +81,6 @@ public class Machine {
 
         parse(input);
 
-        System.out.println("Data :" + dataStack.toString() + "\n");
-        System.out.println("Code :" + codeStack.toString() + "\n");
-
         while (!codeStack.empty()) {
 
             Object opcode = codeStack.pop();
@@ -93,6 +90,7 @@ public class Machine {
 
     /**
      * Parse user inputs and push them to codestack
+     *
      * @param input : Raw input from REPL
      */
     public void parse(String input) {
@@ -123,9 +121,11 @@ public class Machine {
             codeLengthPointer--;
         }
     }
+
     /**
      * Check if input variable matches an operation
      * Call a function if it does, push to datastack if it doesnt
+     *
      * @param op User input
      */
     public void dispatch(Object op) {
@@ -173,10 +173,9 @@ public class Machine {
 }
 
 
-
 /**
  * Basic operations, +, -, *, /
-  */
+ */
 
 class Plus implements Consumer<Machine> {
     @Override
@@ -448,8 +447,8 @@ class IfThen implements Consumer<Machine> {
         boolean condition = (Boolean) dataStack.pop();
 
         //condition was TRUE and an ELSE command exists
-        if (condition && elseIndex != -1){
-            for (int i = 0; i <= elseIndex-thenIndex; i++) {
+        if (condition && elseIndex != -1) {
+            for (int i = 0; i <= elseIndex - thenIndex; i++) {
                 //remove all items from codeStack within ELSE
                 codeStack.remove(thenIndex);
                 System.out.println("Remove op :" + codeStack.toString() + "\n");
@@ -457,14 +456,27 @@ class IfThen implements Consumer<Machine> {
 
         }
 
-        //condition was FALSE and an ELSE command exists
-        if (!condition && elseIndex != -1 ){
-            for (int i = 0; i < stackSize-elseIndex; i++) {
-                //remove all items from codeStack within IF TRUE
-                codeStack.remove(elseIndex);
-                System.out.println("Remove op :" + codeStack.toString() + "\n");
+        //condition was FALSE. clear the necessary parts of code stack
+        if (!condition) {
+
+            // condition was false, no ELSE given, no THEN given -> clear line
+            if (thenIndex == -1 && elseIndex == -1) codeStack.clear();
+            else { //determine if there is either a THEN or an ELSE
+                int startDeletingFromIndex = thenIndex;
+                if (thenIndex == -1) {
+                    startDeletingFromIndex = elseIndex;
+                }
+                if (elseIndex == -1) {
+                    startDeletingFromIndex = thenIndex;
+                }
+
+                // remove elements from code stack that are ignored
+                for (int i = 0; i < stackSize - startDeletingFromIndex; i++) {
+                    codeStack.remove(startDeletingFromIndex);
+                    System.out.println("Remove op :" + codeStack.toString() + "\n");
+                }
+                codeStack.remove("then");
             }
-            codeStack.remove("then");
         }
 
         m.setCodeStack(codeStack);
