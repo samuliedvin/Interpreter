@@ -86,7 +86,6 @@ public class Machine {
 
             Object opcode = codeStack.pop();
             this.dispatch(opcode);
-
         }
     }
 

@@ -16,7 +16,7 @@ public class REPL {
 
         while (true) {
             try {
-
+                System.out.println("=> " + machine.getDataStack().toString());
                 System.out.print("> ");
                 code = scanner.nextLine();
                 machine.run(code);
