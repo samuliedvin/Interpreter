@@ -154,7 +154,6 @@ public class Machine {
         this.dataStack.push(a);
     }
 
-
     public Stack<Object> getCodeStack() {
         return codeStack;
     }
@@ -175,7 +174,7 @@ public class Machine {
 
 
 /**
- * Operations
+ * Basic operations, +, -, *, /
   */
 
 class Plus implements Consumer<Machine> {
@@ -226,6 +225,9 @@ class Divide implements Consumer<Machine> {
     }
 }
 
+/**
+ * Logic operators, ==, >, <, !=, >=, <=, and, or, not
+ */
 class Equals implements Consumer<Machine> {
     @Override
     public void accept(Machine m) {
@@ -355,13 +357,13 @@ class Rotate implements Consumer<Machine> {
         Stack<Object> st = m.getDataStack();
 
         // Rotate top three elements on stack (a b c -> b c a)
-        Object a = st.pop();
-        Object b = st.pop();
         Object c = st.pop();
+        Object b = st.pop();
+        Object a = st.pop();
 
-        st.push(a); // So lets push them on correct order
+        st.push(b); // So lets push them on correct order
         st.push(c);
-        st.push(b);
+        st.push(a);
         m.setDataStack(st);
 
     }
@@ -456,12 +458,10 @@ class IfThen implements Consumer<Machine> {
         m.setDataStack(dataStack);
     }
 }
-/*
- *
- * Tulostus
- *
- */
 
+/**
+ * Pop a value from stack and print it
+ */
 class PrintStack implements Consumer<Machine> {
     @Override
     public void accept(Machine m) {
