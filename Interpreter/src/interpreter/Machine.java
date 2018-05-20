@@ -45,7 +45,6 @@ public class Machine {
         Consumer<Machine> tuck = new Tuck();
 
         // IF-THEN-ELSE & DO LOOP
-
         Consumer<Machine> ifthen = new IfThen();
         Consumer<Machine> print = new PrintStack();
 
@@ -82,6 +81,9 @@ public class Machine {
 
         parse(input);
 
+        System.out.println("Data :" + dataStack.toString() + "\n");
+        System.out.println("Code :" + codeStack.toString() + "\n");
+
         while (!codeStack.empty()) {
 
             Object opcode = codeStack.pop();
@@ -106,7 +108,6 @@ public class Machine {
             } catch (NumberFormatException e) {
                 boolean booleanValue;
                 String value = splitted[codeLengthPointer];
-
                 if (value.equals("true")) {
                     booleanValue = true;
                     this.codeStack.push(booleanValue);
@@ -130,7 +131,7 @@ public class Machine {
     public void dispatch(Object op) {
 
         if (op instanceof String && dispatchMap.containsKey(op)) { // does the input contain an operation?
-            Consumer<Machine> function = this.dispatchMap.get(op);
+            Consumer<Machine> function = dispatchMap.get(op);
             try {
                 function.accept(this);      // call the function
             } catch (EmptyStackException e) {
@@ -141,7 +142,7 @@ public class Machine {
                 cce.printStackTrace();  //dev purposes
             }
         } else {
-            this.dataStack.push(op); //  input was not an operation, push input to datastack
+            dataStack.push(op); //  input was not an operation, push input to datastack
         }
     }
 
@@ -431,22 +432,31 @@ class Tuck implements Consumer<Machine> {
 
 
 /**
- * Logic control conditions, if - else
+ * Logic control conditions, if - else - then
  */
 class IfThen implements Consumer<Machine> {
     @Override
     public void accept(Machine m) {
         Stack<Object> dataStack = m.getDataStack();
         Stack<Object> codeStack = m.getCodeStack();
+        System.out.println("Data :" + dataStack.toString() + "\n");
+        System.out.println("Code :" + codeStack.toString() + "\n");
+        int stackSize = codeStack.size();
+        boolean condition = (Boolean) dataStack.pop();
 
-        boolean statement = (Boolean) dataStack.pop();
-
-        if (statement) {
+        if (condition) {
             Object popped = codeStack.pop();
-            while (!popped.equals("else") || !popped.equals("then")) {
+            for (int i = 0; i < stackSize; i++) {
+                System.out.println("debug :" + popped);
+                m.dispatch(popped);
+                popped = codeStack.pop();
+            }
+
+            /*while (!popped.equals("else") || !popped.equals("then") || codeStack.empty() ) {
+                System.out.println(popped);
                 m.dispatch(popped);
                 popped = dataStack.pop();
-            }
+            }*/
 
         } else {
             Object popped = codeStack.pop();
@@ -455,6 +465,7 @@ class IfThen implements Consumer<Machine> {
             }
 
         }
+        m.setCodeStack(codeStack);
         m.setDataStack(dataStack);
     }
 }
