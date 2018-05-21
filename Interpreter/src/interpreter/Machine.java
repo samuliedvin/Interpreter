@@ -46,6 +46,7 @@ public class Machine {
 
         // IF-THEN-ELSE & DO LOOP
         Consumer<Machine> ifthen = new IfThen();
+        Consumer<Machine> doLoop = new Do();
         Consumer<Machine> print = new PrintStack();
 
 
@@ -73,6 +74,7 @@ public class Machine {
         dispatchMap.put("nip", nip);
         dispatchMap.put("tuck", tuck);
         dispatchMap.put("if", ifthen);
+        dispatchMap.put("do", doLoop);
     }
 
 // Let the machine run stack code
@@ -493,6 +495,27 @@ class IfThen implements Consumer<Machine> {
 
         m.setCodeStack(codeStack);
         m.setDataStack(dataStack);
+    }
+}
+
+class Do implements Consumer<Machine>{
+    @Override
+    public void accept(Machine m) {
+        Stack<Object> dataStack = m.getDataStack();
+        Stack<Object> codeStack = m.getCodeStack();
+        System.out.println("Data : " + dataStack.toString() + "\nCode : " + codeStack.toString());
+        int stackSize;
+        int doIndex, loopIndex;
+        int limit, index;
+
+        index = (Integer) dataStack.pop();
+        limit = (Integer) dataStack.pop();
+
+        System.out.println("***debug***\nLimit : " + limit + " --- Index : " + index + "\n***");
+
+
+
+
     }
 }
 
