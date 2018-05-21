@@ -503,17 +503,33 @@ class Do implements Consumer<Machine>{
     public void accept(Machine m) {
         Stack<Object> dataStack = m.getDataStack();
         Stack<Object> codeStack = m.getCodeStack();
+        Stack<Object> loopCodeStack = new Stack<Object>();
         System.out.println("Data : " + dataStack.toString() + "\nCode : " + codeStack.toString());
-        int stackSize;
-        int doIndex, loopIndex;
-        int limit, index;
 
-        index = (Integer) dataStack.pop();
-        limit = (Integer) dataStack.pop();
+        int stackSize, loopIndex;
+        stackSize = codeStack.size();
+        loopIndex = codeStack.indexOf("loop");
+        if (loopIndex == -1){
+            System.out.println("Cannot use 'do' without 'loop'");
+            return;
+        }
+
+        System.out.println("***debug***\nstackSize : " + stackSize + " --- loopIndex : " + loopIndex + "\n***");
+
+
+        int limit = 0, index = 0;
+        try {
+            index = (Integer) dataStack.pop();
+            limit = (Integer) dataStack.pop();
+        } catch (ClassCastException cce){
+            System.out.println("Your operands cannot be used for a 'do' query.");
+        }
 
         System.out.println("***debug***\nLimit : " + limit + " --- Index : " + index + "\n***");
 
-
+        //clone the part within DO and LOOP
+        loopCodeStack.addAll(codeStack.subList(loopIndex+1,stackSize));
+        System.out.println("\ndebug : loopCodeStack : " + loopCodeStack.toString());
 
 
     }
