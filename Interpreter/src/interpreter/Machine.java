@@ -458,7 +458,7 @@ class IfThen implements Consumer<Machine> {
             }
 
             // check if THEN was used
-            if (thenIndex != -1){
+            if (thenIndex != -1) {
                 startDeletingFromIndex = thenIndex;
             }
 
@@ -467,7 +467,9 @@ class IfThen implements Consumer<Machine> {
                     //remove all items from codeStack within ELSE
                     codeStack.remove(startDeletingFromIndex);
                 }
-            } else {codeStack.remove("then");}
+            } else {
+                codeStack.remove("then");
+            }
 
         }
 
@@ -489,7 +491,8 @@ class IfThen implements Consumer<Machine> {
                 for (int i = 0; i < stackSize - startDeletingFromIndex; i++) {
                     codeStack.remove(startDeletingFromIndex);
                 }
-                codeStack.remove("then");
+                // clean the "loop" string from the stack
+                codeStack.remove(codeStack.lastIndexOf("loop"));
             }
         }
 
@@ -498,40 +501,55 @@ class IfThen implements Consumer<Machine> {
     }
 }
 
-class Do implements Consumer<Machine>{
+/**
+ * Logic control for DO - LOOP
+ * limit index DO --operations-- LOOP ...
+ */
+class Do implements Consumer<Machine> {
     @Override
     public void accept(Machine m) {
         Stack<Object> dataStack = m.getDataStack();
         Stack<Object> codeStack = m.getCodeStack();
         Stack<Object> loopCodeStack = new Stack<Object>();
-        System.out.println("Data : " + dataStack.toString() + "\nCode : " + codeStack.toString());
 
+        //determine where the loop statement begins
         int stackSize, loopIndex;
         stackSize = codeStack.size();
         loopIndex = codeStack.indexOf("loop");
-        if (loopIndex == -1){
+
+        //if no loop is found, exit method
+        if (loopIndex == -1) {
             System.out.println("Cannot use 'do' without 'loop'");
             return;
         }
 
-        System.out.println("***debug***\nstackSize : " + stackSize + " --- loopIndex : " + loopIndex + "\n***");
-
-
+        // 'limit' 'index' DO ... LOOP
         int limit = 0, index = 0;
         try {
             index = (Integer) dataStack.pop();
             limit = (Integer) dataStack.pop();
-        } catch (ClassCastException cce){
+        } catch (ClassCastException cce) { //operans were not integers
             System.out.println("Your operands cannot be used for a 'do' query.");
+            return;
         }
 
-        System.out.println("***debug***\nLimit : " + limit + " --- Index : " + index + "\n***");
+        // index exceeds limit, clear the elements up to LOOP
+        if (index >= limit) {
+            for (int i = 0; i < stackSize - loopIndex; i++) {
+                codeStack.remove(loopIndex);
+            }
+        }
 
-        //clone the part within DO and LOOP
-        loopCodeStack.addAll(codeStack.subList(loopIndex+1,stackSize));
-        System.out.println("\ndebug : loopCodeStack : " + loopCodeStack.toString());
-
-
+        // the meat and bones of a loop
+        while (index < limit) {
+            for (int i = 1; i < stackSize - loopIndex; i++) {
+                //dispatch methods without popping them
+                m.dispatch(codeStack.elementAt(stackSize - i));
+            }
+            index++;
+        }
+        // clean the "loop" string from the codeStack. picks the last to avoid conflicts
+        codeStack.remove(codeStack.lastIndexOf("loop"));
     }
 }
 
