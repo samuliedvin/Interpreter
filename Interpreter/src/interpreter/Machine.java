@@ -138,10 +138,8 @@ public class Machine {
                 function.accept(this);      // call the function
             } catch (EmptyStackException e) {
                 System.out.println("Your stack does not have enough items to perform the operation \"" + op + "\"");
-                e.printStackTrace();    //dev purposes
             } catch (ClassCastException cce) {
                 System.out.println("Operation \"" + op + "\" does not match the stack contents.");
-                cce.printStackTrace();  //dev purposes
             }
         } else {
             dataStack.push(op); //  input was not an operation, push input to datastack
