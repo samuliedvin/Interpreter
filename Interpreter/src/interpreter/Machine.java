@@ -492,7 +492,7 @@ class IfThen implements Consumer<Machine> {
                     codeStack.remove(startDeletingFromIndex);
                 }
                 // clean the "loop" string from the stack
-                codeStack.remove(codeStack.lastIndexOf("loop"));
+                codeStack.remove(codeStack.lastIndexOf("then"));
             }
         }
 
