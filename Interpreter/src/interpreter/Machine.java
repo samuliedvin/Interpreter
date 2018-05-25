@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
+
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -17,11 +18,7 @@ import javax.swing.JFrame;
 
 public class Machine {
     // luodaan jFrame
-    System.out.println("as".equalsIgnoreCase(null));
-    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    init();
-    setSize(400,400);
-    setVisible(true);
+    // System.out.println("as".equalsIgnoreCase(null));
 
     private Stack<Object> dataStack;
     private Stack<Integer> returnAddressStack;
@@ -31,9 +28,15 @@ public class Machine {
 
     // Init machine
     public Machine() {
-
+    		
+    		JFrame frame = new JFrame();
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        init(frame);
+        frame.setSize(400,400);
+        frame.setVisible(true);
+    	
         dataStack = new Stack<Object>();
-        dispatchMap = new HashMap<String, Consumer<Machine>>();
+        Map<String, Consumer<Machine>> dispatchMap = new HashMap<String, Consumer<Machine>>();
         codeStack = new Stack<Object>();
 
         // Basic calculations
@@ -75,7 +78,6 @@ public class Machine {
 
 
         // Init dispatch map
-
         dispatchMap.put("+", plus);
         dispatchMap.put("-", minus);
         dispatchMap.put("*", mul);
@@ -102,67 +104,29 @@ public class Machine {
         dispatchMap.put("point", point);
         dispatchMap.put("line", line);
     }
+    
     // testiä varten. 
-    public void init() {
+    public void init(JFrame frame) {
   		 final Design d = new Design();
-  		 	
-  	       
-
-  	        JButton b = new JButton("add");
-  	        b.addActionListener(new ActionListener() {
-
-  	            @Override
-  	            public void actionPerformed(ActionEvent e) {
-  	                Random r = new Random();
-  	                int w = r.nextInt(100);
-  	                int h = r.nextInt(100);
-  	           
-  	                d.addCirle(w, h, 100);
-  	              
-  	            }
-  	        });
-  	        add(d);
-  	        add(b,BorderLayout.SOUTH);
-    }
-    // tällä pitäisi luoda komponentit joita lisätään jframeen.
-    class Design extends JComponent {	  
- 		 public List<Shape> shapes = new ArrayList<Shape>();
-
- 	     public void paintComponent(Graphics g) {
- 	         super.paintComponent(g);
- 	         Graphics2D g2d = (Graphics2D) g;
- 	         g2d.setStroke(new BasicStroke(2));
-              for(Shape s : shapes){
-             	 g2d.draw(s);
- 	            }
- 	        }
- 	 
- 	     
- 	     
- 	     public void addDot(int x,int y) {
- 	    			 
- 	        	shapes.add(new Line2D.Double(x,y,x,y));
- 	        	repaint();
- 		
- 	        }
- 	     public void addRect(int xPos, int yPos, int width, int height) {
- 	            shapes.add(new Rectangle(xPos,yPos,width,height));
- 	            repaint();
- 	        }
- 	     
- 	     public void addLine(int x1, int y1, int x2, int y2) {
- 	    	 shapes.add(new Line2D.Double(x1, y1, x2, y2));
- 	    	 repaint();
- 	     }
- 	     
- 	     public void addCirle(int x, int y, int r) {
- 	    	 shapes.add(new Ellipse2D.Double(x, y, r, r));
- 	    	 repaint();
- 	     }
- 	 } 
-
-// Let the machine run stack code
-
+  		 
+  		 JButton b = new JButton();
+  	     b.addActionListener(new ActionListener() {
+	  	    	 @Override
+	  	    	 public void actionPerformed(ActionEvent e) {
+	  	    		 Random r = new Random();
+	  	    		 int w = r.nextInt(100);
+	  	    		 int h = r.nextInt(100);  
+	  	    		 d.addCirle(w, h, 100);     
+	  	    	 }
+  	     });
+  	     
+  	     frame.add(d);
+  	     frame.add(b,BorderLayout.SOUTH);
+  	     
+    } // init()
+    
+    
+    // Let the machine run stack code
     public void run(String input) {
 
         parse(input);
@@ -255,6 +219,44 @@ public class Machine {
         this.dataStack = newDataStack;
     }
 }
+
+
+// tällä pitäisi luoda komponentit joita lisätään jframeen.
+class Design extends JComponent {	  
+	 
+		public List<Shape> shapes = new ArrayList<Shape>();
+		public void paintComponent(Graphics g) {
+			super.paintComponent(g);
+         Graphics2D g2d = (Graphics2D) g;
+         g2d.setStroke(new BasicStroke(2));
+          for(Shape s : shapes){
+         	 g2d.draw(s);
+            }
+        }
+
+     
+     
+     public void addDot(int x,int y) {
+    			 
+        	shapes.add(new Line2D.Double(x,y,x,y));
+        	repaint();
+	
+        }
+     public void addRect(int xPos, int yPos, int width, int height) {
+            shapes.add(new Rectangle(xPos,yPos,width,height));
+            repaint();
+        }
+     
+     public void addLine(int x1, int y1, int x2, int y2) {
+    	 shapes.add(new Line2D.Double(x1, y1, x2, y2));
+    	 repaint();
+     }
+     
+     public void addCirle(int x, int y, int r) {
+    	 shapes.add(new Ellipse2D.Double(x, y, r, r));
+    	 repaint();
+     }
+ }
 
 
 /**
@@ -655,14 +657,13 @@ class Point implements Consumer<Machine> {
 }
 
 class Line implements Consumer<Machine> {
-    
 	public void accept(Machine m) {
 		Stack<Object> st = m.getDataStack();
         int a = (Integer) st.pop();
         int b = (Integer) st.pop();
         int c = (Integer) st.pop();
         int d = (Integer) st.pop();
-        Machine.Design md = m.new Design();
+        Design md = new Design();
         md.addLine(a,b,c,d);
         
 	}
