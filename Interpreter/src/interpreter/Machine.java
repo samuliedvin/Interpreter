@@ -1,7 +1,27 @@
+import java.awt.BasicStroke;
+import java.awt.BorderLayout;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.Shape;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Line2D;
 import java.util.*;
 import java.util.function.Consumer;
 
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+
 public class Machine {
+    // luodaan jFrame
+    System.out.println("as".equalsIgnoreCase(null));
+    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    init();
+    setSize(400,400);
+    setVisible(true);
 
     private Stack<Object> dataStack;
     private Stack<Integer> returnAddressStack;
@@ -48,6 +68,10 @@ public class Machine {
         Consumer<Machine> ifthen = new IfThen();
         Consumer<Machine> doLoop = new Do();
         Consumer<Machine> print = new PrintStack();
+       
+        //2D Tulostus
+        Consumer<Machine> point = new Point();
+        Consumer<Machine> line = new Line();
 
 
         // Init dispatch map
@@ -75,7 +99,67 @@ public class Machine {
         dispatchMap.put("tuck", tuck);
         dispatchMap.put("if", ifthen);
         dispatchMap.put("do", doLoop);
+        dispatchMap.put("point", point);
+        dispatchMap.put("line", line);
     }
+    // testiä varten. 
+    public void init() {
+  		 final Design d = new Design();
+  		 	
+  	       
+
+  	        JButton b = new JButton("add");
+  	        b.addActionListener(new ActionListener() {
+
+  	            @Override
+  	            public void actionPerformed(ActionEvent e) {
+  	                Random r = new Random();
+  	                int w = r.nextInt(100);
+  	                int h = r.nextInt(100);
+  	           
+  	                d.addCirle(w, h, 100);
+  	              
+  	            }
+  	        });
+  	        add(d);
+  	        add(b,BorderLayout.SOUTH);
+    }
+    // tällä pitäisi luoda komponentit joita lisätään jframeen.
+    class Design extends JComponent {	  
+ 		 public List<Shape> shapes = new ArrayList<Shape>();
+
+ 	     public void paintComponent(Graphics g) {
+ 	         super.paintComponent(g);
+ 	         Graphics2D g2d = (Graphics2D) g;
+ 	         g2d.setStroke(new BasicStroke(2));
+              for(Shape s : shapes){
+             	 g2d.draw(s);
+ 	            }
+ 	        }
+ 	 
+ 	     
+ 	     
+ 	     public void addDot(int x,int y) {
+ 	    			 
+ 	        	shapes.add(new Line2D.Double(x,y,x,y));
+ 	        	repaint();
+ 		
+ 	        }
+ 	     public void addRect(int xPos, int yPos, int width, int height) {
+ 	            shapes.add(new Rectangle(xPos,yPos,width,height));
+ 	            repaint();
+ 	        }
+ 	     
+ 	     public void addLine(int x1, int y1, int x2, int y2) {
+ 	    	 shapes.add(new Line2D.Double(x1, y1, x2, y2));
+ 	    	 repaint();
+ 	     }
+ 	     
+ 	     public void addCirle(int x, int y, int r) {
+ 	    	 shapes.add(new Ellipse2D.Double(x, y, r, r));
+ 	    	 repaint();
+ 	     }
+ 	 } 
 
 // Let the machine run stack code
 
@@ -549,6 +633,39 @@ class Do implements Consumer<Machine> {
         // clean the "loop" string from the codeStack. picks the last to avoid conflicts
         codeStack.remove(codeStack.lastIndexOf("loop"));
     }
+}
+
+/*
+ * 
+ * Tästä tarkoitus saada luotua uusi jcomponent, mutta ei piirrä oikein.
+ * 
+ */
+
+
+class Point implements Consumer<Machine> {
+	
+	public void accept(Machine m) {
+		Stack<Object> st = m.getDataStack();
+        int a = (Integer) st.pop();
+        int b = (Integer) st.pop();
+        String c = (String) st.pop();
+        
+        
+	}   
+}
+
+class Line implements Consumer<Machine> {
+    
+	public void accept(Machine m) {
+		Stack<Object> st = m.getDataStack();
+        int a = (Integer) st.pop();
+        int b = (Integer) st.pop();
+        int c = (Integer) st.pop();
+        int d = (Integer) st.pop();
+        Machine.Design md = m.new Design();
+        md.addLine(a,b,c,d);
+        
+	}
 }
 
 /**
