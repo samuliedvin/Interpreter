@@ -75,6 +75,8 @@ public class Machine {
         //2D Tulostus
         Consumer<Machine> point = new Point();
         Consumer<Machine> line = new Line();
+        Consumer<Machine> circle = new Circle();
+        Consumer<Machine> rect = new Rect();
 
 
         // Init dispatch map
@@ -103,6 +105,10 @@ public class Machine {
         dispatchMap.put("do", doLoop);
         dispatchMap.put("point", point);
         dispatchMap.put("line", line);
+        dispatchMap.put("circle", circle);
+        dispatchMap.put("rect", rect);
+
+
     }
     
     
@@ -209,40 +215,7 @@ public class Machine {
 }
 
 
-// tällä pitäisi luoda komponentit joita lisätään jframeen.
-class Design extends JComponent {	  
-	 
-		public List<Shape> shapes = new ArrayList<Shape>();
-		
-		public void paintComponent(Graphics g) {
-			super.paintComponent(g);
-			Graphics2D g2d = (Graphics2D) g;
-			g2d.setStroke(new BasicStroke(2));
-			for(Shape s : shapes){
-				g2d.draw(s);
-			}
-		}
 
-		public void addDot(int x,int y) {
-			shapes.add(new Line2D.Double(x,y,x,y));
-			repaint();
-		}
-		
-		public void addRect(int xPos, int yPos, int width, int height) {
-            shapes.add(new Rectangle(xPos,yPos,width,height));
-            repaint();
-        }
-     
-		public void addLine(int x1, int y1, int x2, int y2) {
-			shapes.add(new Line2D.Double(x1, y1, x2, y2));
-			repaint();
-		}
-     
-		public void addCirle(int x, int y, int r) {
-			shapes.add(new Ellipse2D.Double(x, y, r, r));
-			repaint();
-		}
- }
 
 
 /**
@@ -640,6 +613,7 @@ class Point implements Consumer<Machine> {
         Design md = m.getDesign();
         md.addDot(a, b);
         m.setDesign(md);
+        m.setDataStack(st);
 	}   
 }
 
@@ -656,6 +630,31 @@ class Line implements Consumer<Machine> {
 	}
 }
 
+class Circle implements Consumer<Machine> {
+	public void accept(Machine m) {
+		Stack<Object> st = m.getDataStack();
+        int r = (Integer) st.pop();
+        int y = (Integer) st.pop();
+        int x = (Integer) st.pop();
+
+        Design md = m.getDesign();
+        md.addCircle(x, y, r);
+        m.setDesign(md);
+	}
+}
+
+class Rect implements Consumer<Machine> {
+	public void accept(Machine m) {
+		Stack<Object> st = m.getDataStack();
+        int height = (Integer) st.pop();
+        int width = (Integer) st.pop();
+        int xPos = (Integer) st.pop();
+        int yPos = (Integer) st.pop();
+        Design md = m.getDesign();
+        md.addRect(xPos, yPos, width, height);
+        m.setDesign(md);
+	}
+}
 /**
  * Pop a value from stack and print it
  */
