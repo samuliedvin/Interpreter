@@ -17,25 +17,31 @@ public class DemoREPL {
         scale = initialInput / 100;
         //round scale to 2 decimals
         scale = (double) Math.round(scale * 100d) / 100d;
-        System.out.printf("Scale set to %s.", scale);
+        System.out.printf("Scale set to %s. Press X to exit.\n", scale);
 
         char input;
         String code;
         Machine machine = new Machine();
+        boolean keepGoing = true;
         // make scanner only read single characters
         //scanner.useDelimiter("");
 
-        while (true) {
-            System.out.print("A, O, K, P? > ");
+        while (keepGoing) {
+            System.out.print("A, O, K, P, ? > ");
             input = Character.toUpperCase(scanner.next().charAt(0));
+            if (input == 'X') {
+                keepGoing = false;
+                continue;
+            }
             if ("AOKP".indexOf(input) == -1) {
                 System.out.println("That character is not supported.");
                 continue;
             }
             code = transformRequestToCode(input);
             machine.run(code);
-
         }
+        System.out.println("Goodbye.");
+        System.exit(0);
     }
 
     private static String transformRequestToCode(char request) {
