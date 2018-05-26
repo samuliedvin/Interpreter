@@ -3,12 +3,12 @@ import java.util.Scanner;
 public class DemoREPL {
     // where characters begin. incremented after each draw
     static int[] startingCoordinates = {10, 10};
-    static int characterDefaultSize = 30;
+    static int characterSize = 30;
+    private static double scale = 1.0;
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         double initialInput = -1;
-        double scale = 2.0;
         System.out.println("Demonstration REPL");
         System.out.print("Choose a number between 1 and 200:\n> ");
         while (initialInput < 0) {
@@ -21,10 +21,11 @@ public class DemoREPL {
         scale = initialInput / 100;
         //round scale to 2 decimals
         scale = (double) Math.round(scale * 100d) / 100d;
+        characterSize *= scale;
         System.out.printf("Scale set to %s. Press X to exit.\n", scale);
 
         char input;
-        String code;
+        String[] code;
 
         Machine machine = new Machine();
         boolean keepGoing = true;
@@ -43,15 +44,17 @@ public class DemoREPL {
                 continue;
             }
             code = transformRequestToCode(input);
-            machine.run(code);
-            startingCoordinates[0] += scale * characterDefaultSize;
+            for (String instruction : code) {
+                machine.run(instruction);
+            }
+            startingCoordinates[0] += characterSize + 4 * scale ;
         }
         System.out.println("Goodbye.");
         System.exit(0);
     }
 
-    private static String transformRequestToCode(char request) {
-        String code = "";
+    private static String[] transformRequestToCode(char request) {
+        String code[];
         switch (request) {
             case 'A':
                 code = initializeA();
@@ -65,36 +68,51 @@ public class DemoREPL {
             case 'P':
                 code = initializeP();
                 break;
+            default:
+                code = new String[0];
         }
-        System.out.println(code);
         return code;
     }
 
-    private static String initializeA() {
+    private static String[] initializeA() {
+        String[] code = new String[3];
+
         int x1 = startingCoordinates[0];
-        int y1 = startingCoordinates[1] + characterDefaultSize;
-        int x2 = x1 + characterDefaultSize / 2;
-        int y2 = y1 - characterDefaultSize;
+        int y1 = startingCoordinates[1] + characterSize;
+        int x2 = x1 + characterSize / 2;
+        int y2 = startingCoordinates[1];
+        code[0] =  x1 + " " + y1 + " " + x2 + " " + y2 + " " + "line";
 
-        String code = x1 + " " + y1 + " " + x2 + " " + y2;
-        return (code + " line");
+        x1 = startingCoordinates[0] + characterSize / 2;
+        y1 = startingCoordinates[1];
+        x2 = startingCoordinates[0] + characterSize;
+        y2 = startingCoordinates[1] + characterSize;
+        code[1] =  x1 + " " + y1 + " " + x2 + " " + y2 + " " + "line";
+
+        x1 = startingCoordinates[0] + characterSize /4;
+        y1 = startingCoordinates[1] + characterSize /2;
+        x2 = startingCoordinates[0] + characterSize /4 * 3;
+        y2 = y1;
+        code[2] =  x1 + " " + y1 + " " + x2 + " " + y2 + " " + "line";
+
+        return (code);
     }
 
-    private static String initializeO() {
-        String code = "";
+    private static String[] initializeO() {
+        String[] code;
 
-        return code;
+        return null;
     }
 
-    private static String initializeK() {
-        String code = "";
+    private static String[] initializeK() {
+        String[] code;
 
-        return code;
+        return null;
     }
 
-    private static String initializeP() {
-        String code = "";
+    private static String[] initializeP() {
+        String[] code;
 
-        return code;
+        return null;
     }
 }
