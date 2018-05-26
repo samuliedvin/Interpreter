@@ -10,12 +10,13 @@ public class DemoREPL {
      */
     private static int[] startingCoordinates = {10, 10};
     private static int characterSize = 30;
-    private static double scale = 1.0;
+
 
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         double initialInput = -1;
+        double scale = 1.0;
         System.out.println("Demonstration REPL");
         System.out.print("Choose a number between 1 and 200:\n> ");
         while (initialInput == -1) {
@@ -33,7 +34,7 @@ public class DemoREPL {
         //round scale to 2 decimals
         scale = (double) Math.round(scale * 100d) / 100d;
         characterSize *= scale;
-        System.out.printf("Scale set to %s. Press X to exit.\n", scale);
+        System.out.printf("Scale set to %s. Ready to draw. Press X to exit.\n", scale);
 
         char input;
         String[] code;
@@ -99,19 +100,20 @@ public class DemoREPL {
         y1 = startingCoordinates[1] + characterSize;
         x2 = x1 + characterSize / 2;
         y2 = startingCoordinates[1];
-        code[0] = x1 + " " + y1 + " " + x2 + " " + y2 + " " + "line";
+        code[0] = x1 + " " + y1 + " " + x2 + " " + y2 + " " + "black line";
+        System.out.println(code[0]);
 
         x1 = startingCoordinates[0] + characterSize / 2;
         y1 = startingCoordinates[1];
         x2 = startingCoordinates[0] + characterSize;
         y2 = startingCoordinates[1] + characterSize;
-        code[1] = x1 + " " + y1 + " " + x2 + " " + y2 + " " + "line";
+        code[1] = x1 + " " + y1 + " " + x2 + " " + y2 + " " + "black line";
 
         x1 = startingCoordinates[0] + characterSize / 4;
         y1 = startingCoordinates[1] + characterSize / 2;
         x2 = startingCoordinates[0] + characterSize / 4 * 3;
         y2 = y1;
-        code[2] = x1 + " " + y1 + " " + x2 + " " + y2 + " " + "line";
+        code[2] = x1 + " " + y1 + " " + x2 + " " + y2 + " " + "black line";
 
         return code;
     }
@@ -124,7 +126,7 @@ public class DemoREPL {
         x = startingCoordinates[0] - characterSize / 10; // offset added to center the circle
         y = startingCoordinates[1];
         r = characterSize;
-        code[0] = x + " " + y + " " + r + " " + "circle";
+        code[0] = x + " " + y + " " + r + " " + "black circle";
 
         return code;
     }
@@ -138,19 +140,19 @@ public class DemoREPL {
         y1 = startingCoordinates[1];
         x2 = x1;
         y2 = y1 + characterSize;
-        code[0] = x1 + " " + y1 + " " + x2 + " " + y2 + " " + "line";
+        code[0] = x1 + " " + y1 + " " + x2 + " " + y2 + " " + "black line";
 
         x1 = startingCoordinates[0];
         y1 = startingCoordinates[1] + characterSize / 2;
         x2 = startingCoordinates[0] + characterSize;
         y2 = startingCoordinates[1];
-        code[1] = x1 + " " + y1 + " " + x2 + " " + y2 + " " + "line";
+        code[1] = x1 + " " + y1 + " " + x2 + " " + y2 + " " + "black line";
 
         x1 = startingCoordinates[0] + characterSize / 2;
         y1 = startingCoordinates[1] + characterSize / 4;
         x2 = startingCoordinates[0] + characterSize;
         y2 = startingCoordinates[1] + characterSize;
-        code[2] = x1 + " " + y1 + " " + x2 + " " + y2 + " " + "line";
+        code[2] = x1 + " " + y1 + " " + x2 + " " + y2 + " " + "black line";
 
         return code;
     }
@@ -164,13 +166,13 @@ public class DemoREPL {
         y1 = startingCoordinates[1];
         x2 = startingCoordinates[0];
         y2 = startingCoordinates[1] + characterSize;
-        code[0] = x1 + " " + y1 + " " + x2 + " " + y2 + " " + "line";
+        code[0] = x1 + " " + y1 + " " + x2 + " " + y2 + " " + "black line";
 
         x1 = startingCoordinates[0];
         y1 = startingCoordinates[1];
         rectangleWidth = characterSize ;
         rectangleHeight = characterSize / 2;
-        code[1] = x1 + " " + y1 + " " + rectangleWidth + " " + rectangleHeight + " " + "rect";
+        code[1] = x1 + " " + y1 + " " + rectangleWidth + " " + rectangleHeight + " " + "black rect";
 
         return code;
     }

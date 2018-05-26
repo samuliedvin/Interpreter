@@ -607,11 +607,11 @@ class Point implements Consumer<Machine> {
 
     public void accept(Machine m) {
         Stack<Object> st = m.getDataStack();
+        String color = (String) st.pop();
         int b = (Integer) st.pop();
         int a = (Integer) st.pop();
-
         Design md = m.getDesign();
-        md.addDot(a, b);
+        md.addDot(a, b, color);
         m.setDesign(md);
         m.setDataStack(st);
     }
@@ -620,12 +620,13 @@ class Point implements Consumer<Machine> {
 class Line implements Consumer<Machine> {
     public void accept(Machine m) {
         Stack<Object> st = m.getDataStack();
+        String color = (String) st.pop();
         int d = (Integer) st.pop();
         int c = (Integer) st.pop();
         int b = (Integer) st.pop();
         int a = (Integer) st.pop();
         Design md = m.getDesign();
-        md.addLine(a, b, c, d);
+        md.addLine(a, b, c, d, color);
         m.setDesign(md);
     }
 }
@@ -633,12 +634,12 @@ class Line implements Consumer<Machine> {
 class Circle implements Consumer<Machine> {
     public void accept(Machine m) {
         Stack<Object> st = m.getDataStack();
+        String color = (String) st.pop();
         int r = (Integer) st.pop();
         int y = (Integer) st.pop();
         int x = (Integer) st.pop();
-
         Design md = m.getDesign();
-        md.addCircle(x, y, r);
+        md.addCircle(x, y, r, color);
         m.setDesign(md);
     }
 }
@@ -646,12 +647,13 @@ class Circle implements Consumer<Machine> {
 class Rect implements Consumer<Machine> {
     public void accept(Machine m) {
         Stack<Object> st = m.getDataStack();
+        String color = (String) st.pop();
         int height = (Integer) st.pop();
         int width = (Integer) st.pop();
         int yPos = (Integer) st.pop();
         int xPos = (Integer) st.pop();
         Design md = m.getDesign();
-        md.addRect(xPos, yPos, width, height);
+        md.addRect(xPos, yPos, width, height, color);
         m.setDesign(md);
     }
 }
