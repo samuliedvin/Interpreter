@@ -146,8 +146,8 @@ public class DemoREPL {
         y2 = startingCoordinates[1];
         code[1] = x1 + " " + y1 + " " + x2 + " " + y2 + " " + "line";
 
-        x1 = startingCoordinates[0];
-        y1 = startingCoordinates[1] + characterSize / 2;
+        x1 = startingCoordinates[0] + characterSize / 2;
+        y1 = startingCoordinates[1] + characterSize / 4;
         x2 = startingCoordinates[0] + characterSize;
         y2 = startingCoordinates[1] + characterSize;
         code[2] = x1 + " " + y1 + " " + x2 + " " + y2 + " " + "line";
