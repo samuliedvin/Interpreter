@@ -43,4 +43,7 @@ class Design extends JComponent {
 			shapes.add(new Ellipse2D.Double(x, y, r, r));
 			repaint();
 		}
+		public void clear() {
+
+		}
  }

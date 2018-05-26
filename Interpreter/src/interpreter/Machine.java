@@ -12,6 +12,7 @@ import java.awt.geom.Line2D;
 import java.util.*;
 import java.util.function.Consumer;
 
+import javax.crypto.Mac;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -27,14 +28,14 @@ public class Machine {
 
     // Init machine
     public Machine() {
-    		
-    		JFrame frame = new JFrame();
+
+        JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
- 		d = new Design();
- 		frame.add(d);
-        frame.setSize(400,400);
+        d = new Design();
+        frame.add(d);
+        frame.setSize(400, 400);
         frame.setVisible(true);
-    	
+
         dataStack = new Stack<Object>();
         dispatchMap = new HashMap<String, Consumer<Machine>>();
         codeStack = new Stack<Object>();
@@ -71,12 +72,13 @@ public class Machine {
         Consumer<Machine> ifthen = new IfThen();
         Consumer<Machine> doLoop = new Do();
         Consumer<Machine> print = new PrintStack();
-       
+
         //2D Tulostus
         Consumer<Machine> point = new Point();
         Consumer<Machine> line = new Line();
         Consumer<Machine> circle = new Circle();
         Consumer<Machine> rect = new Rect();
+        Consumer<Machine> clear = new Clear();
 
 
         // Init dispatch map
@@ -107,11 +109,12 @@ public class Machine {
         dispatchMap.put("line", line);
         dispatchMap.put("circle", circle);
         dispatchMap.put("rect", rect);
+        dispatchMap.put("clear", clear);
 
 
     }
-    
-    
+
+
     // Let the machine run stack code
     public void run(String input) {
 
@@ -204,7 +207,7 @@ public class Machine {
     public void setDataStack(Stack<Object> newDataStack) {
         this.dataStack = newDataStack;
     }
-    
+
     public Design getDesign() {
         return d;
     }
@@ -213,9 +216,6 @@ public class Machine {
         this.d = newDesign;
     }
 }
-
-
-
 
 
 /**
@@ -597,42 +597,42 @@ class Do implements Consumer<Machine> {
 }
 
 /*
- * 
+ *
  * Tästä tarkoitus saada luotua uusi jcomponent, mutta ei piirrä oikein.
- * 
+ *
  */
 
 
 class Point implements Consumer<Machine> {
-	
-	public void accept(Machine m) {
-		Stack<Object> st = m.getDataStack();
+
+    public void accept(Machine m) {
+        Stack<Object> st = m.getDataStack();
         int b = (Integer) st.pop();
         int a = (Integer) st.pop();
-        
+
         Design md = m.getDesign();
         md.addDot(a, b);
         m.setDesign(md);
         m.setDataStack(st);
-	}   
+    }
 }
 
 class Line implements Consumer<Machine> {
-	public void accept(Machine m) {
-		Stack<Object> st = m.getDataStack();
+    public void accept(Machine m) {
+        Stack<Object> st = m.getDataStack();
         int d = (Integer) st.pop();
         int c = (Integer) st.pop();
         int b = (Integer) st.pop();
         int a = (Integer) st.pop();
         Design md = m.getDesign();
-        md.addLine(a,b,c,d);
+        md.addLine(a, b, c, d);
         m.setDesign(md);
-	}
+    }
 }
 
 class Circle implements Consumer<Machine> {
-	public void accept(Machine m) {
-		Stack<Object> st = m.getDataStack();
+    public void accept(Machine m) {
+        Stack<Object> st = m.getDataStack();
         int r = (Integer) st.pop();
         int y = (Integer) st.pop();
         int x = (Integer) st.pop();
@@ -640,21 +640,30 @@ class Circle implements Consumer<Machine> {
         Design md = m.getDesign();
         md.addCircle(x, y, r);
         m.setDesign(md);
-	}
+    }
 }
 
 class Rect implements Consumer<Machine> {
-	public void accept(Machine m) {
-		Stack<Object> st = m.getDataStack();
+    public void accept(Machine m) {
+        Stack<Object> st = m.getDataStack();
         int height = (Integer) st.pop();
         int width = (Integer) st.pop();
-        int xPos = (Integer) st.pop();
         int yPos = (Integer) st.pop();
+        int xPos = (Integer) st.pop();
         Design md = m.getDesign();
         md.addRect(xPos, yPos, width, height);
         m.setDesign(md);
-	}
+    }
 }
+
+class Clear implements Consumer<Machine> {
+    @Override
+    public void accept(Machine m) {
+        Design md = m.getDesign();
+        md.getGraphics().clearRect(0, 0, md.getWidth(), md.getHeight());
+    }
+}
+
 /**
  * Pop a value from stack and print it
  */

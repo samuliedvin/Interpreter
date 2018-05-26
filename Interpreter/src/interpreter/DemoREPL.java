@@ -2,20 +2,31 @@ import java.util.Scanner;
 
 public class DemoREPL {
     // where characters begin. incremented after each draw
-    static int[] startingCoordinates = {10, 10};
-    static int characterSize = 30;
+
+    /**
+     * @param startingCoordinates: 0 => x, 1 => y
+     * @param characterSize
+     * @param scale
+     */
+    private static int[] startingCoordinates = {10, 10};
+    private static int characterSize = 30;
     private static double scale = 1.0;
+
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         double initialInput = -1;
         System.out.println("Demonstration REPL");
         System.out.print("Choose a number between 1 and 200:\n> ");
-        while (initialInput < 0) {
+        while (initialInput == -1) {
             try {
                 initialInput = Double.parseDouble(scanner.nextLine());
-            } catch (NumberFormatException nfE) {
-                System.out.println("Invalid parameter. Please choose a number between 1 and 200");
+                if (initialInput < 1 || initialInput > 200){
+                    initialInput = -1;
+                    throw new Exception("wrong input");
+                }
+            } catch (Exception e) {
+                System.out.print("Invalid parameter. Please choose a number between 1 and 200.\n> ");
             }
         }
         scale = initialInput / 100;
@@ -47,12 +58,17 @@ public class DemoREPL {
             for (String instruction : code) {
                 machine.run(instruction);
             }
-            startingCoordinates[0] += characterSize + 4 * scale ;
+            startingCoordinates[0] += characterSize + 5 * scale; // move right to draw the next character. adds spacing
         }
         System.out.println("Goodbye.");
         System.exit(0);
     }
 
+    /**
+     *
+     * @param request: the letter input by user
+     * @return : stack language command to create requested letter
+     */
     private static String[] transformRequestToCode(char request) {
         String code[];
         switch (request) {
@@ -77,42 +93,85 @@ public class DemoREPL {
     private static String[] initializeA() {
         String[] code = new String[3];
 
-        int x1 = startingCoordinates[0];
-        int y1 = startingCoordinates[1] + characterSize;
-        int x2 = x1 + characterSize / 2;
-        int y2 = startingCoordinates[1];
-        code[0] =  x1 + " " + y1 + " " + x2 + " " + y2 + " " + "line";
+        int x1, y1, x2, y2;
+
+        x1 = startingCoordinates[0];
+        y1 = startingCoordinates[1] + characterSize;
+        x2 = x1 + characterSize / 2;
+        y2 = startingCoordinates[1];
+        code[0] = x1 + " " + y1 + " " + x2 + " " + y2 + " " + "line";
 
         x1 = startingCoordinates[0] + characterSize / 2;
         y1 = startingCoordinates[1];
         x2 = startingCoordinates[0] + characterSize;
         y2 = startingCoordinates[1] + characterSize;
-        code[1] =  x1 + " " + y1 + " " + x2 + " " + y2 + " " + "line";
+        code[1] = x1 + " " + y1 + " " + x2 + " " + y2 + " " + "line";
 
-        x1 = startingCoordinates[0] + characterSize /4;
-        y1 = startingCoordinates[1] + characterSize /2;
-        x2 = startingCoordinates[0] + characterSize /4 * 3;
+        x1 = startingCoordinates[0] + characterSize / 4;
+        y1 = startingCoordinates[1] + characterSize / 2;
+        x2 = startingCoordinates[0] + characterSize / 4 * 3;
         y2 = y1;
-        code[2] =  x1 + " " + y1 + " " + x2 + " " + y2 + " " + "line";
+        code[2] = x1 + " " + y1 + " " + x2 + " " + y2 + " " + "line";
 
-        return (code);
+        return code;
     }
 
     private static String[] initializeO() {
-        String[] code;
+        String[] code = new String[1];
 
-        return null;
+        int x, y, r;
+
+        x = startingCoordinates[0] - characterSize / 10; // offset added to center the circle
+        y = startingCoordinates[1];
+        r = characterSize;
+        code[0] = x + " " + y + " " + r + " " + "circle";
+
+        return code;
     }
 
     private static String[] initializeK() {
-        String[] code;
+        String[] code = new String[3];
 
-        return null;
+        int x1, y1, x2, y2;
+
+        x1 = startingCoordinates[0];
+        y1 = startingCoordinates[1];
+        x2 = x1;
+        y2 = y1 + characterSize;
+        code[0] = x1 + " " + y1 + " " + x2 + " " + y2 + " " + "line";
+
+        x1 = startingCoordinates[0];
+        y1 = startingCoordinates[1] + characterSize / 2;
+        x2 = startingCoordinates[0] + characterSize;
+        y2 = startingCoordinates[1];
+        code[1] = x1 + " " + y1 + " " + x2 + " " + y2 + " " + "line";
+
+        x1 = startingCoordinates[0];
+        y1 = startingCoordinates[1] + characterSize / 2;
+        x2 = startingCoordinates[0] + characterSize;
+        y2 = startingCoordinates[1] + characterSize;
+        code[2] = x1 + " " + y1 + " " + x2 + " " + y2 + " " + "line";
+
+        return code;
     }
 
     private static String[] initializeP() {
-        String[] code;
+        String[] code = new String[2];
 
-        return null;
+        int x1, y1, x2, y2, rectangleWidth, rectangleHeight;
+
+        x1 = startingCoordinates[0];
+        y1 = startingCoordinates[1];
+        x2 = startingCoordinates[0];
+        y2 = startingCoordinates[1] + characterSize;
+        code[0] = x1 + " " + y1 + " " + x2 + " " + y2 + " " + "line";
+
+        x1 = startingCoordinates[0];
+        y1 = startingCoordinates[1];
+        rectangleWidth = characterSize ;
+        rectangleHeight = characterSize / 2;
+        code[1] = x1 + " " + y1 + " " + rectangleWidth + " " + rectangleHeight + " " + "rect";
+
+        return code;
     }
 }
