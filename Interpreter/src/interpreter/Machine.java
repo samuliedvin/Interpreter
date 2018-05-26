@@ -571,7 +571,7 @@ class Do implements Consumer<Machine> {
         try {
             index = (Integer) dataStack.pop();
             limit = (Integer) dataStack.pop();
-        } catch (ClassCastException cce) { //operans were not integers
+        } catch (ClassCastException cce) { //operands were not integers
             System.out.println("Your operands cannot be used for a 'do' query.");
             return;
         }
@@ -607,8 +607,8 @@ class Point implements Consumer<Machine> {
 	
 	public void accept(Machine m) {
 		Stack<Object> st = m.getDataStack();
-        int a = (Integer) st.pop();
         int b = (Integer) st.pop();
+        int a = (Integer) st.pop();
         
         Design md = m.getDesign();
         md.addDot(a, b);
@@ -620,10 +620,10 @@ class Point implements Consumer<Machine> {
 class Line implements Consumer<Machine> {
 	public void accept(Machine m) {
 		Stack<Object> st = m.getDataStack();
-        int a = (Integer) st.pop();
-        int b = (Integer) st.pop();
-        int c = (Integer) st.pop();
         int d = (Integer) st.pop();
+        int c = (Integer) st.pop();
+        int b = (Integer) st.pop();
+        int a = (Integer) st.pop();
         Design md = m.getDesign();
         md.addLine(a,b,c,d);
         m.setDesign(md);

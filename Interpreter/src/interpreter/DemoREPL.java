@@ -1,6 +1,10 @@
 import java.util.Scanner;
 
 public class DemoREPL {
+    // where characters begin. incremented after each draw
+    static int[] startingCoordinates = {10, 10};
+    static int characterDefaultSize = 30;
+
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         double initialInput = -1;
@@ -21,6 +25,7 @@ public class DemoREPL {
 
         char input;
         String code;
+
         Machine machine = new Machine();
         boolean keepGoing = true;
         // make scanner only read single characters
@@ -39,6 +44,7 @@ public class DemoREPL {
             }
             code = transformRequestToCode(input);
             machine.run(code);
+            startingCoordinates[0] += scale * characterDefaultSize;
         }
         System.out.println("Goodbye.");
         System.exit(0);
@@ -60,13 +66,18 @@ public class DemoREPL {
                 code = initializeP();
                 break;
         }
+        System.out.println(code);
         return code;
     }
 
     private static String initializeA() {
-        String code = "";
+        int x1 = startingCoordinates[0];
+        int y1 = startingCoordinates[1] + characterDefaultSize;
+        int x2 = x1 + characterDefaultSize / 2;
+        int y2 = y1 - characterDefaultSize;
 
-        return code;
+        String code = x1 + " " + y1 + " " + x2 + " " + y2;
+        return (code + " line");
     }
 
     private static String initializeO() {
