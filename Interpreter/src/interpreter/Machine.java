@@ -79,6 +79,7 @@ public class Machine {
         Consumer<Machine> circle = new Circle();
         Consumer<Machine> rect = new Rect();
         Consumer<Machine> clear = new Clear();
+        Consumer<Machine> triangle = new Triangle();
 
 
         // Init dispatch map
@@ -110,6 +111,7 @@ public class Machine {
         dispatchMap.put("circle", circle);
         dispatchMap.put("rect", rect);
         dispatchMap.put("clear", clear);
+        dispatchMap.put("triangle", triangle);
 
 
     }
@@ -663,6 +665,22 @@ class Clear implements Consumer<Machine> {
     public void accept(Machine m) {
         Design md = m.getDesign();
         md.getGraphics().clearRect(0, 0, md.getWidth(), md.getHeight());
+    }
+}
+
+class Triangle implements Consumer<Machine> {
+    public void accept(Machine m) {
+        Stack<Object> st = m.getDataStack();
+        String color = (String) st.pop();
+        int y3 = (Integer) st.pop();
+        int x3 = (Integer) st.pop();
+        int y2 = (Integer) st.pop();
+        int x2 = (Integer) st.pop();
+        int y1 = (Integer) st.pop();
+        int x1 = (Integer) st.pop();
+        Design md = m.getDesign();
+        md.addTriangle(x1,y1,x2,y2,x3,y3,color);
+        m.setDesign(md);
     }
 }
 
