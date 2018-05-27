@@ -48,6 +48,12 @@ class Design extends JComponent {
         shapes.put(new Ellipse2D.Double(x, y, r, r), changeColor(color));
         repaint();
     }
+    public void addTriangle(int x1, int y1, int x2, int y2, int x3, int y3, String color) {
+    	shapes.put(new Line2D.Double(x1,y1,x2,y2), changeColor(color));
+    	shapes.put(new Line2D.Double(x2,y2,x3,y3), changeColor(color));
+    	shapes.put(new Line2D.Double(x3,y3,x1,y1), changeColor(color));
+    	repaint();
+    }
 
     public Color changeColor(String colorName) {
         Color color;
