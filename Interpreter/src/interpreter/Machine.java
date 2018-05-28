@@ -138,26 +138,30 @@ public class Machine {
 
         String[] splitted = input.split(" ");
 
-        int codeLengthPointer = splitted.length - 1;
+        int codeLengthPointer = splitted.length - 1; // Parse input string tokens in reverse order.
 
         while (codeLengthPointer >= 0) {
             try {
                 int value = Integer.parseInt(splitted[codeLengthPointer]);
                 this.codeStack.push(value);
             } catch (NumberFormatException e) {
+
                 boolean booleanValue;
                 String value = splitted[codeLengthPointer];
-                if (value.equals("true")) {
+                
+					if (value.equals("true")) {
                     booleanValue = true;
                     this.codeStack.push(booleanValue);
                 } else if (value.equals("false")) {
                     booleanValue = false;
                     this.codeStack.push(booleanValue);
-                } else {
+                } else if (value.charAt(0) == ”\”” && value.charAt(value.length - 1) == ”\””) {
                     this.codeStack.push(value);
-                }
-                ;
-
+                } else if (dispatchMap.containsKey(value)) {
+						this.codeStack.push(value);
+					} else {
+						System.out.println(”Invalid argument:” + value);
+					}
             }
             codeLengthPointer--;
         }
@@ -185,6 +189,9 @@ public class Machine {
         }
     }
 
+
+	
+	// Machine getters & setters
 
     public Object pop() {
         return this.dataStack.pop();
