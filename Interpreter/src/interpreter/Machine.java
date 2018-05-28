@@ -149,19 +149,20 @@ public class Machine {
                 boolean booleanValue;
                 String value = splitted[codeLengthPointer];
                 
-					if (value.equals("true")) {
+				if (value.equals("true")) { 					// Check if boolean
                     booleanValue = true;
                     this.codeStack.push(booleanValue);
-                } else if (value.equals("false")) {
+                } else if (value.equals("false")) {			// Check if boolean
                     booleanValue = false;
                     this.codeStack.push(booleanValue);
-                } else if (value.charAt(0) == ”\”” && value.charAt(value.length - 1) == ”\””) {
-                    this.codeStack.push(value);
-                } else if (dispatchMap.containsKey(value)) {
-						this.codeStack.push(value);
-					} else {
-						System.out.println(”Invalid argument:” + value);
-					}
+                } else if (value.matches("([\"'])(\\\\?.)*?\\1")) {		// Check if string (" ") -- Shameless Regex copypaste B)
+                		value = value.substring(1, value.length()-1); 
+                		this.codeStack.push(value);
+                } else if (dispatchMap.containsKey(value)) {	// If not string, check if reserved word
+                		this.codeStack.push(value);
+				} else {										// If not a number, boolean, string or reserved, then do nothing and tell user
+					System.out.println("Invalid argument: " + value);
+				}
             }
             codeLengthPointer--;
         }
@@ -192,15 +193,7 @@ public class Machine {
 
 	
 	// Machine getters & setters
-
-    public Object pop() {
-        return this.dataStack.pop();
-    }
-
-    public void push(Object a) {
-        this.dataStack.push(a);
-    }
-
+    
     public Stack<Object> getCodeStack() {
         return codeStack;
     }
