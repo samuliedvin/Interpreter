@@ -15,22 +15,20 @@ public class REPL {
         			String filepath = args[0];
         			File file = new File(filepath);
         			scanner = new Scanner(file);
-        			String finalCode = ""; 
+        			
         			
         			while (scanner.hasNextLine()) {
-        				try { 
+        				try {
+        					
 	        				code = scanner.nextLine();
-        					if(code.isEmpty()) continue;
-        					finalCode.concat(code);
-
-	        				
+	        				if(code.isEmpty()) continue;
+	        				machine.run(code);
+	        				System.out.println("=> " + machine.getDataStack().toString());
         				} catch (Exception e) {
         					e.printStackTrace();
         					break;
         				}
         			}
-    				System.out.println("=> " + machine.getDataStack().toString());
-        			machine.run(finalCode);
         			
         		} catch (FileNotFoundException e) {
         			System.out.println("Your file was not found.");

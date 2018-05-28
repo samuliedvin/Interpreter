@@ -21,7 +21,7 @@ public class Machine {
     // luodaan jFrame
     // System.out.println("as".equalsIgnoreCase(null));
 
-    private Stack<Object> dataStack;
+    private Stack<Object> dataStack; 
     private Stack<Object> codeStack;
     private Design d;
     private Map<String, Consumer<Machine>> dispatchMap;
