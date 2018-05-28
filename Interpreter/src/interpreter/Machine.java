@@ -71,6 +71,9 @@ public class Machine {
         // IF-THEN-ELSE & DO LOOP
         Consumer<Machine> ifthen = new IfThen();
         Consumer<Machine> doLoop = new Do();
+        
+        // read & print
+        Consumer<Machine> read = new ReadInput();
         Consumer<Machine> print = new PrintStack();
 
         //2D Tulostus
@@ -87,7 +90,8 @@ public class Machine {
         dispatchMap.put("-", minus);
         dispatchMap.put("*", mul);
         dispatchMap.put("/", div);
-        dispatchMap.put(".", print);
+        dispatchMap.put("print", print);
+        dispatchMap.put("read", read);
         dispatchMap.put(">", gt);
         dispatchMap.put("<", lt);
         dispatchMap.put("==", eq);
@@ -146,8 +150,10 @@ public class Machine {
                 this.codeStack.push(value);
             } catch (NumberFormatException e) {
 
-                boolean booleanValue;
+                boolean booleanValue; 
                 String value = splitted[codeLengthPointer];
+                
+                if (value.equals("//")) break;				// Enables commenting!
                 
 				if (value.equals("true")) { 					// Check if boolean
                     booleanValue = true;
@@ -161,12 +167,12 @@ public class Machine {
                 } else if (dispatchMap.containsKey(value)) {	// If not string, check if reserved word
                 		this.codeStack.push(value);
 				} else {										// If not a number, boolean, string or reserved, then do nothing and tell user
-					System.out.println("Invalid argument: " + value);
+					// System.out.println("Invalid argument: " + value);
 				}
-            }
+            } // catch
             codeLengthPointer--;
-        }
-    }
+        } // while
+    } // parse
 
     /**
      * Check if input variable matches an operation
@@ -188,12 +194,15 @@ public class Machine {
         } else {
             dataStack.push(op); //  input was not an operation, push input to datastack
         }
-    }
+    } // dispatch
 
 
 	
-	// Machine getters & setters
-    
+	/* 
+	 * 
+	 * Machine getters & setters
+     *
+     */
     public Stack<Object> getCodeStack() {
         return codeStack;
     }
@@ -684,6 +693,20 @@ class Triangle implements Consumer<Machine> {
     }
 }
 
+/**
+ * Read: Allows stack language program to read input from user.
+ */
+
+class ReadInput implements Consumer<Machine> {
+	@Override
+	public void accept(Machine m) {		
+		Scanner sc = new Scanner(System.in);
+		System.out.println("Program demands user input. Enter your entry to datastack.");
+		System.out.print("Input: ");
+		String input = sc.nextLine();
+		m.parse(input);
+	}
+}
 /**
  * Pop a value from stack and print it
  */
