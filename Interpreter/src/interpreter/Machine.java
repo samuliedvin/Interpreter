@@ -39,83 +39,38 @@ public class Machine {
         dataStack = new Stack<Object>();
         dispatchMap = new HashMap<String, Consumer<Machine>>();
         codeStack = new Stack<Object>();
-
-        // Basic calculations
-        Consumer<Machine> plus = new Plus();
-        Consumer<Machine> minus = new Minus();
-        Consumer<Machine> mul = new Multiply();
-        Consumer<Machine> div = new Divide();
-
-        // Comparators
-        Consumer<Machine> gt = new Greater();
-        Consumer<Machine> lt = new Lesser();
-        Consumer<Machine> eq = new Equals();
-        Consumer<Machine> goe = new GreaterOrEqual();
-        Consumer<Machine> loe = new LesserOrEqual();
-        Consumer<Machine> neq = new NotEquals();
-
-        // Logic operators
-        Consumer<Machine> and = new And();
-        Consumer<Machine> or = new Or();
-        Consumer<Machine> not = new Not();
-
-        // ”dup”, ”rot”, ”swap”, ”drop”, ”over”, ”nip”, ”tuck” 
-        Consumer<Machine> dup = new Duplicate();
-        Consumer<Machine> rot = new Rotate();
-        Consumer<Machine> swap = new Swap();
-        Consumer<Machine> drop = new Drop();
-        Consumer<Machine> over = new Over();
-        Consumer<Machine> nip = new Nip();
-        Consumer<Machine> tuck = new Tuck();
-
-        // IF-THEN-ELSE & DO LOOP
-        Consumer<Machine> ifthen = new IfThen();
-        Consumer<Machine> doLoop = new Do();
         
-        // read & print
-        Consumer<Machine> read = new ReadInput();
-        Consumer<Machine> print = new PrintStack();
-
-        //2D Tulostus
-        Consumer<Machine> point = new Point();
-        Consumer<Machine> line = new Line();
-        Consumer<Machine> circle = new Circle();
-        Consumer<Machine> rect = new Rect();
-        Consumer<Machine> clear = new Clear();
-        Consumer<Machine> triangle = new Triangle();
-
-
         // Init dispatch map
-        dispatchMap.put("+", plus);
-        dispatchMap.put("-", minus);
-        dispatchMap.put("*", mul);
-        dispatchMap.put("/", div);
-        dispatchMap.put("print", print);
-        dispatchMap.put("read", read);
-        dispatchMap.put(">", gt);
-        dispatchMap.put("<", lt);
-        dispatchMap.put("==", eq);
-        dispatchMap.put(">=", goe);
-        dispatchMap.put("<=", loe);
-        dispatchMap.put("!=", neq);
-        dispatchMap.put("and", and);
-        dispatchMap.put("or", or);
-        dispatchMap.put("not", not);
-        dispatchMap.put("dup", dup);
-        dispatchMap.put("rot", rot);
-        dispatchMap.put("swap", swap);
-        dispatchMap.put("drop", drop);
-        dispatchMap.put("over", over);
-        dispatchMap.put("nip", nip);
-        dispatchMap.put("tuck", tuck);
-        dispatchMap.put("if", ifthen);
-        dispatchMap.put("do", doLoop);
-        dispatchMap.put("point", point);
-        dispatchMap.put("line", line);
-        dispatchMap.put("circle", circle);
-        dispatchMap.put("rect", rect);
-        dispatchMap.put("clear", clear);
-        dispatchMap.put("triangle", triangle);
+        dispatchMap.put("+", new Plus());
+        dispatchMap.put("-", new Minus());
+        dispatchMap.put("*", new Multiply());
+        dispatchMap.put("/", new Divide());
+        dispatchMap.put("print", new PrintStack());
+        dispatchMap.put("read", new ReadInput());
+        dispatchMap.put(">", new Greater());
+        dispatchMap.put("<", new Lesser());
+        dispatchMap.put("==", new Equals());
+        dispatchMap.put(">=", new GreaterOrEqual());
+        dispatchMap.put("<=", new LesserOrEqual());
+        dispatchMap.put("!=", new NotEquals());
+        dispatchMap.put("and", new And());
+        dispatchMap.put("or", new Or());
+        dispatchMap.put("not", new Not());
+        dispatchMap.put("dup", new Duplicate());
+        dispatchMap.put("rot", new Rotate());
+        dispatchMap.put("swap", new Swap());
+        dispatchMap.put("drop", new Drop());
+        dispatchMap.put("over", new Over());
+        dispatchMap.put("nip", new Nip());
+        dispatchMap.put("tuck", new Tuck());
+        dispatchMap.put("if", new IfThen());
+        dispatchMap.put("do", new Do());
+        dispatchMap.put("point", new Point());
+        dispatchMap.put("line", new Line());
+        dispatchMap.put("circle", new Circle());
+        dispatchMap.put("rect", new Rect());
+        dispatchMap.put("clear", new Clear());
+        dispatchMap.put("triangle", new Triangle());
 
 
     }
