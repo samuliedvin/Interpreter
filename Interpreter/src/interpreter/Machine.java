@@ -71,18 +71,13 @@ public class Machine {
         dispatchMap.put("rect", new Rect());
         dispatchMap.put("clear", new Clear());
         dispatchMap.put("triangle", new Triangle());
-
-
     }
 
 
     // Let the machine run stack code
     public void run(String input) {
-
         parse(input);
-
         while (!codeStack.empty()) {
-
             Object opcode = codeStack.pop();
             this.dispatch(opcode);
         }
@@ -94,34 +89,28 @@ public class Machine {
      * @param input : Raw input from REPL
      */
     public void parse(String input) {
-
         String[] splitted = input.split(" ");
-
         int codeLengthPointer = splitted.length - 1; // Parse input string tokens in reverse order.
-
         while (codeLengthPointer >= 0) {
             try {
                 int value = Integer.parseInt(splitted[codeLengthPointer]);
                 this.codeStack.push(value);
             } catch (NumberFormatException e) {
-
                 boolean booleanValue; 
                 String value = splitted[codeLengthPointer];
-                
-                if (value.equals("//")) break;				// Enables commenting!
-                
-				if (value.equals("true")) { 					// Check if boolean
+                if (value.equals("//")) break; // Enables commenting!
+				if (value.equals("true")) { // Check if boolean
                     booleanValue = true;
                     this.codeStack.push(booleanValue);
-                } else if (value.equals("false")) {			// Check if boolean
+                } else if (value.equals("false")) { // Check if boolean
                     booleanValue = false;
                     this.codeStack.push(booleanValue);
-                } else if (value.matches("([\"'])(\\\\?.)*?\\1")) {		// Check if string (" ") -- Shameless Regex copypaste B)
+                } else if (value.matches("([\"'])(\\\\?.)*?\\1")) { // Check if string (" ") -- Shameless Regex copypaste B)
                 		value = value.substring(1, value.length()-1); 
                 		this.codeStack.push(value);
-                } else if (dispatchMap.containsKey(value)) {	// If not string, check if reserved word
+                } else if (dispatchMap.containsKey(value)) { // If not string, check if reserved word
                 		this.codeStack.push(value);
-				} else {										// If not a number, boolean, string or reserved, then do nothing and tell user
+				} else { // If not a number, boolean, string or reserved, then do nothing and tell user
 					// System.out.println("Invalid argument: " + value);
 				}
             } // catch
@@ -136,7 +125,6 @@ public class Machine {
      * @param op User input
      */
     public void dispatch(Object op) {
-
         if (op instanceof String && dispatchMap.containsKey(op)) { // does the input contain an operation?
             Consumer<Machine> function = dispatchMap.get(op);
             try {
@@ -454,23 +442,18 @@ class IfThen implements Consumer<Machine> {
         int thenIndex = codeStack.indexOf("then");
         boolean condition = (Boolean) dataStack.pop();
 
-
         //condition was TRUE. clear the possible ELSE part
         if (condition) {
-
             int startDeletingFromIndex = 0;
             int deleteTowardsIndex = 0;
-
             // check if ELSE was used
             if (elseIndex != -1) {
                 deleteTowardsIndex = elseIndex;
             }
-
             // check if THEN was used
             if (thenIndex != -1) {
                 startDeletingFromIndex = thenIndex;
             }
-
             if (startDeletingFromIndex < deleteTowardsIndex) {
                 for (int i = 0; i <= deleteTowardsIndex - startDeletingFromIndex; i++) {
                     //remove all items from codeStack within ELSE
@@ -484,7 +467,6 @@ class IfThen implements Consumer<Machine> {
 
         //condition was FALSE. clear the necessary parts of code stack
         if (!condition) {
-
             // condition was false, no ELSE given, no THEN given -> clear line
             if (thenIndex == -1 && elseIndex == -1) codeStack.clear();
             else { //determine if there is either a THEN or an ELSE
@@ -504,7 +486,6 @@ class IfThen implements Consumer<Machine> {
                 codeStack.remove(codeStack.lastIndexOf("then"));
             }
         }
-
         m.setCodeStack(codeStack);
         m.setDataStack(dataStack);
     }
