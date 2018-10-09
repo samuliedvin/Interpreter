@@ -36,41 +36,46 @@ public class Machine {
         frame.setSize(400, 400);
         frame.setVisible(true);
 
-        dataStack = new Stack<Object>();
-        dispatchMap = new HashMap<String, Consumer<Machine>>();
-        codeStack = new Stack<Object>();
+        dataStack = new Stack<Data>();
+        dispatchMap = new HashMap<String, Command>();
+        codeStack = new Stack<Code>();
         
         // Init dispatch map
-        dispatchMap.put("+", new Plus());
-        dispatchMap.put("-", new Minus());
-        dispatchMap.put("*", new Multiply());
-        dispatchMap.put("/", new Divide());
+        dispatchMap.put("+", new Plus("+"));
+        dispatchMap.put("-", new Minus("-"));
+        dispatchMap.put("*", new Multiply("*"));
+        dispatchMap.put("/", new Divide("/"));
+
         dispatchMap.put("print", new PrintStack());
         dispatchMap.put("read", new ReadInput());
-        dispatchMap.put(">", new Greater());
-        dispatchMap.put("<", new Lesser());
-        dispatchMap.put("==", new Equals());
-        dispatchMap.put(">=", new GreaterOrEqual());
-        dispatchMap.put("<=", new LesserOrEqual());
-        dispatchMap.put("!=", new NotEquals());
-        dispatchMap.put("and", new And());
-        dispatchMap.put("or", new Or());
-        dispatchMap.put("not", new Not());
-        dispatchMap.put("dup", new Duplicate());
-        dispatchMap.put("rot", new Rotate());
-        dispatchMap.put("swap", new Swap());
-        dispatchMap.put("drop", new Drop());
-        dispatchMap.put("over", new Over());
-        dispatchMap.put("nip", new Nip());
-        dispatchMap.put("tuck", new Tuck());
-        dispatchMap.put("if", new IfThen());
-        dispatchMap.put("do", new Do());
-        dispatchMap.put("point", new Point());
-        dispatchMap.put("line", new Line());
-        dispatchMap.put("circle", new Circle());
-        dispatchMap.put("rect", new Rect());
-        dispatchMap.put("clear", new Clear());
-        dispatchMap.put("triangle", new Triangle());
+
+        dispatchMap.put(">", new Comparator(">"));
+        dispatchMap.put("<", new Comparator("<"));
+        dispatchMap.put("==", new Comparator("=="));
+        dispatchMap.put(">=", new Comparator(">="));
+        dispatchMap.put("<=", new Comparator("<="));
+        dispatchMap.put("!=", new Comparator("!="));
+        dispatchMap.put("and", new Comparator("and"));
+        dispatchMap.put("or", new Comparator("or"));
+        dispatchMap.put("not", new Comparator("not"));
+
+        dispatchMap.put("dup", new StackOp());
+        dispatchMap.put("rot", new StackOp());
+        dispatchMap.put("swap", new StackOp());
+        dispatchMap.put("drop", new StackOp());
+        dispatchMap.put("over", new StackOp());
+        dispatchMap.put("nip", new StackOp());
+        dispatchMap.put("tuck", new StackOp());
+
+        dispatchMap.put("if", new ControlFlow());
+        dispatchMap.put("do", new ControlFlow());
+
+        dispatchMap.put("point", new GraphOp());
+        dispatchMap.put("line", new GraphOp());
+        dispatchMap.put("circle", new GraphOp());
+        dispatchMap.put("rect", new GraphOp());
+        dispatchMap.put("clear", new GraphOp());
+        dispatchMap.put("triangle", new GraphOp());
     }
 
 
@@ -147,7 +152,7 @@ public class Machine {
      *
      */
     public Stack<Object> getCodeStack() {
-        return codeStack;
+        return this.codeStack;
     }
 
     public void setCodeStack(Stack<Object> newCodeStack) {
@@ -155,7 +160,7 @@ public class Machine {
     }
 
     public Stack<Object> getDataStack() {
-        return dataStack;
+        return this.dataStack;
     }
 
     public void setDataStack(Stack<Object> newDataStack) {
@@ -163,7 +168,7 @@ public class Machine {
     }
 
     public Design getDesign() {
-        return d;
+        return this.d;
     }
 
     public void setDesign(Design newDesign) {
@@ -179,12 +184,11 @@ public class Machine {
 class Plus implements Consumer<Machine> {
     @Override
     public void accept(Machine m) {
-        Stack<Object> st = m.getDataStack();
+        Stack<Object> st = m.dataStack;
         int a = (Integer) st.pop();
         int b = (Integer) st.pop();
         int result = a + b;
         st.push(result);
-        m.setDataStack(st);
     }
 }
 
